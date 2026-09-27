@@ -1,0 +1,192 @@
+/* SolarSwarm design tokens
+ * Brand: "Swarm" purple gradient + battery copper.
+ * Raw palette → semantic tokens (light on :root, dark on [data-theme="dark"]).
+ */
+
+:root {
+  /* ---- Raw palette ---- */
+  --violet-950: #14062f;
+  --violet-900: #2a0e61;
+  --violet-800: #3b1690;
+  --violet-700: #4a1fb8;
+  --violet-600: #5b2bd9;
+  --violet-500: #7243f0;
+  --violet-400: #9d6bff;
+  --violet-300: #bb97ff;
+  --violet-200: #d9c7ff;
+  --violet-100: #efe7ff;
+  --violet-50: #f7f3ff;
+
+  --copper-900: #4a2c12;
+  --copper-800: #7a4a1f;
+  --copper-700: #975c28;
+  --copper-600: #b87333;
+  --copper-500: #c98545;
+  --copper-400: #e0a36a;
+  --copper-300: #eec39a;
+  --copper-200: #f6dcc3;
+  --copper-100: #fbefe3;
+
+  --graphite-975: #07060b;
+  --graphite-950: #0b0a10;
+  --graphite-900: #15131c;
+  --graphite-850: #1d1a27;
+  --graphite-800: #2a2635;
+  --graphite-700: #3a3548;
+  --graphite-500: #6b6580;
+  --graphite-400: #a39db3;
+  --graphite-200: #e4dfea;
+  --graphite-100: #f0edf5;
+  --paper-50: #f7f5f2;
+
+  /* ---- Gradients (theme-independent) ---- */
+  --grad-swarm: linear-gradient(135deg, #2a0e61 0%, #5b2bd9 55%, #9d6bff 100%);
+  --grad-swarm-soft: linear-gradient(135deg, rgb(91 43 217 / 0.16), rgb(157 107 255 / 0.06));
+  --grad-copper: linear-gradient(
+    120deg,
+    #7a4a1f 0%,
+    #b87333 30%,
+    #eec39a 50%,
+    #b87333 70%,
+    #7a4a1f 100%
+  );
+  --grad-dusk: linear-gradient(180deg, #14062f 0%, #3b1690 45%, #b87333 88%, #e0a36a 100%);
+
+  /* ---- Radii / shadows / motion ---- */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 140ms;
+  --dur-med: 260ms;
+  --dur-slow: 520ms;
+
+  /* ---- Semantic: light ---- */
+  color-scheme: light;
+  --bg: var(--paper-50);
+  --surface: #ffffff;
+  --surface-2: var(--graphite-100);
+  --surface-inverse: var(--graphite-950);
+  --border: var(--graphite-200);
+  --border-strong: #cfc8da;
+  --text: #16131f;
+  --text-muted: #625c70;
+  --text-subtle: #8a849a;
+  --text-inverse: #f2eff8;
+
+  --primary: var(--violet-600);
+  --primary-hover: var(--violet-700);
+  --primary-fg: #ffffff;
+  --primary-soft: var(--violet-100);
+  --primary-soft-fg: var(--violet-700);
+
+  --accent: var(--copper-600);
+  --accent-hover: var(--copper-700);
+  --accent-fg: #ffffff;
+  --accent-soft: var(--copper-100);
+  --accent-soft-fg: var(--copper-800);
+  --accent-text: var(--copper-800); /* copper safe for body text on light */
+
+  --success: #1f9d68;
+  --success-soft: #e3f6ee;
+  --warning: #c77a14;
+  --warning-soft: #fdf1df;
+  --danger: #d6343b;
+  --danger-soft: #fde8e8;
+  --info: #2f7fd6;
+  --info-soft: #e5f0fc;
+
+  /* Robot status */
+  --status-tracking: var(--violet-600);
+  --status-charging: var(--copper-600);
+  --status-moving: #2f7fd6;
+  --status-docked: #6b6580;
+  --status-fault: #d6343b;
+
+  /* Charts — categorical */
+  --chart-1: #6a3df0; /* solar / generation */
+  --chart-2: #b87333; /* battery / storage */
+  --chart-3: #1f9d8a; /* load / consumption */
+  --chart-4: #2f7fd6; /* export */
+  --chart-5: #d9577a; /* grid import */
+  --chart-6: #8c8a1c; /* other */
+  --chart-grid: #e8e3ee;
+  --chart-axis: #8a849a;
+
+  --glass: rgb(255 255 255 / 0.72);
+  --glass-border: rgb(255 255 255 / 0.6);
+  --overlay: rgb(20 6 47 / 0.45);
+
+  --shadow-sm: 0 1px 2px rgb(22 19 31 / 0.06), 0 1px 1px rgb(22 19 31 / 0.04);
+  --shadow-md: 0 6px 20px -6px rgb(42 14 97 / 0.18), 0 2px 6px rgb(22 19 31 / 0.06);
+  --shadow-lg: 0 24px 60px -20px rgb(42 14 97 / 0.35), 0 8px 20px -8px rgb(22 19 31 / 0.12);
+  --shadow-glow: 0 0 0 1px rgb(157 107 255 / 0.3), 0 10px 40px -10px rgb(91 43 217 / 0.6);
+  --ring: 0 0 0 3px rgb(114 67 240 / 0.35);
+}
+
+/* ---- Semantic: dark ---- */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: var(--graphite-950);
+  --surface: var(--graphite-900);
+  --surface-2: var(--graphite-850);
+  --surface-inverse: var(--paper-50);
+  --border: var(--graphite-800);
+  --border-strong: var(--graphite-700);
+  --text: #f2eff8;
+  --text-muted: var(--graphite-400);
+  --text-subtle: #7d7790;
+  --text-inverse: #16131f;
+
+  --primary: var(--violet-400);
+  --primary-hover: var(--violet-300);
+  --primary-fg: #12052b;
+  --primary-soft: rgb(157 107 255 / 0.14);
+  --primary-soft-fg: var(--violet-300);
+
+  --accent: var(--copper-400);
+  --accent-hover: var(--copper-300);
+  --accent-fg: #2a1606;
+  --accent-soft: rgb(224 163 106 / 0.14);
+  --accent-soft-fg: var(--copper-300);
+  --accent-text: var(--copper-400);
+
+  --success: #3ccf8e;
+  --success-soft: rgb(60 207 142 / 0.14);
+  --warning: #f0a849;
+  --warning-soft: rgb(240 168 73 / 0.14);
+  --danger: #ff6369;
+  --danger-soft: rgb(255 99 105 / 0.14);
+  --info: #5aa6ff;
+  --info-soft: rgb(90 166 255 / 0.14);
+
+  --status-tracking: var(--violet-400);
+  --status-charging: var(--copper-400);
+  --status-moving: #5aa6ff;
+  --status-docked: #8a849a;
+  --status-fault: #ff6369;
+
+  --chart-1: #9d6bff;
+  --chart-2: #c4854d;
+  --chart-3: #26a08d;
+  --chart-4: #4f94ec;
+  --chart-5: #e05a80;
+  --chart-6: #9a9330;
+  --chart-grid: #25212f;
+  --chart-axis: #7d7790;
+
+  --glass: rgb(21 19 28 / 0.66);
+  --glass-border: rgb(255 255 255 / 0.08);
+  --overlay: rgb(7 6 11 / 0.6);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 30px 70px -20px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(255 255 255 / 0.04);
+  --shadow-glow: 0 0 0 1px rgb(157 107 255 / 0.35), 0 10px 50px -10px rgb(157 107 255 / 0.55);
+  --ring: 0 0 0 3px rgb(157 107 255 / 0.4);
+}

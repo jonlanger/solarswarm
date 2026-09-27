@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+public/maplibre/
+
+# Blender working files (regenerate with blender/build_robot.py)
+*.blend
+*.blend1
+# full-size PNG renders — the site serves the JPEG versions (ortho overlays keep alpha, so they stay)
+public/renders/*.png
+!public/renders/ortho_*.png
+__pycache__/

@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SolarSwarm
 
-## Getting Started
-
-First, run the development server:
+Autonomous, sun-tracking solar robots: a marketing site and a fleet-management + energy platform, built from the
+[Automated Solar Field](https://jonlanger.vercel.app/projects/solar-field-installation) concept.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install     # also copies the MapLibre worker into public/maplibre
+npm run dev     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What's here
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Route | |
+|---|---|
+| `/` | Homepage: live 3D hero, scroll-driven truck → portal → formation deployment, interactive sun tracking vs fixed tilt, robot anatomy, audiences (buyer/renter · seller/lessor · SolarSwarm Ops), gallery |
+| `/design-system` | Living token + component reference (swarm violet gradient, battery copper, light/dark) |
+| `/app` | Platform overview, role-aware; switch roles in the header or with `?role=buyer|lessor|ops` |
+| `/app/map` | MapLibre fleet map: Sentinel-2 imagery, drone-ortho overlays, live unit status, 3D twin drawer |
+| `/app/robots`, `/app/robots/[id]` | Fleet table, unit detail with digital twin, health trends, remote actions |
+| `/app/energy` | Solar in, storage, load, grid export/import, tracking gain, settlement |
+| `/app/maintenance` | Predictive failure forecast, work orders, soiling, support tickets |
+| `/app/onboarding` | Register → site → layout → animated deploy → commission (units join the live fleet) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How it's built
 
-## Learn More
+- **Design tokens** live in `lib/tokens.css` (raw ramps → semantic tokens, dark mode redefined, not inverted) and are
+  mapped into Tailwind v4 in `app/globals.css`. Primitives in `components/ui/`. The chart palette is CVD-validated.
+- **3D**: a single procedural Blender model (`blender/build_robot.py`) is the source for the Cycles renders *and* the
+  rigged GLBs (`public/models/solarbot.glb`, `solarbot_lod.glb`). The rig node names (`mast_height`, `panel_azimuth`,
+  `panel_tilt`, `wheel_*`, `LED_*` materials) are the contract with `components/three/Robot.tsx`. Hundreds of units render
+  through `Swarm.tsx` (one InstancedMesh per part).
+- **Sun**: `lib/sun.ts` wraps suncalc (2.x returns degrees from north; normalized there) and derives dual-axis tracking
+  poses. The same ephemeris drives the 3D panels and the energy model.
+- **Simulation** (`lib/sim/`): seeded world of sites, units, leases and tickets; per-site clear-sky energy model with
+  battery dispatch; wear-driven health → risk → failure predictions. The header clock supports time-warp (1×–3600×).
+- **Mapping**: MapLibre GL with EOX Sentinel-2 cloudless 2016 (CC BY 4.0) and OpenFreeMap / OpenStreetMap. No keys.
 
-To learn more about Next.js, take a look at the following resources:
+## Regenerating renders
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+BL=/Applications/Blender.app/Contents/MacOS/Blender
+$BL -b -P blender/build_robot.py            # hero GLB
+$BL -b -P blender/build_robot.py -- --low   # swarm LOD GLB
+$BL -b -P blender/export_props.py           # truck + portal GLBs
+blender/render_all.sh                       # Cycles stills (hero, studio, array, formation, onboarding, …)
+$BL -b -P blender/render_scenes.py -- ortho_mojave ortho_valley ortho_permian ortho_piedmont --samples 96
+for f in public/renders/*.png; do case $f in *ortho_*) ;; *) sips -s format jpeg -s formatOptions 84 "$f" --out "${f%.png}.jpg";; esac; done
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Attribution: Sentinel-2 cloudless by EOX IT Services GmbH (contains modified Copernicus Sentinel data 2016) ·
+© OpenStreetMap contributors · OpenFreeMap.
