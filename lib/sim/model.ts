@@ -36,6 +36,10 @@ export interface Site {
   timezone: string;
   /** has a Blender ortho overlay in /public/renders */
   ortho?: boolean;
+  /** onboarded sites: the fence line drawn in the site mapper ([lon, lat] ring) */
+  perimeter?: [number, number][];
+  /** onboarded sites: unit slots as metre offsets from lat/lon (replaces the rows × cols block) */
+  slots?: { dx: number; dy: number; row: number; col: number }[];
 }
 
 export interface Health {
@@ -239,6 +243,7 @@ function offset(lat: number, lon: number, dx: number, dy: number): [number, numb
 }
 
 export function siteBoundary(site: Site): [number, number][] {
+  if (site.perimeter?.length) return [...site.perimeter, site.perimeter[0]];
   const w = site.cols * site.pitchX + 12;
   const h = site.rows * site.pitchY + 12;
   const c = [
@@ -315,27 +320,31 @@ export function commissionSite(site: Site): RobotUnit[] {
   const rnd = mulberry32(Date.now() % 100000);
   const units: RobotUnit[] = [];
   let serial = 20000 + ROBOTS.length;
-  for (let r = 0; r < site.rows; r++)
-    for (let c = 0; c < site.cols; c++) {
-      const dx = (c - (site.cols - 1) / 2) * site.pitchX;
-      const dy = ((site.rows - 1) / 2 - r) * site.pitchY;
-      const [lat, lon] = offset(site.lat, site.lon, dx, dy);
-      units.push({
-        id: `SS-${serial++}`,
-        serial: `NW${serial}`,
-        siteId: site.id,
-        row: r,
-        col: c,
-        lat,
-        lon,
-        firmware: "swarm-os 2.0.4",
-        hours: 0,
-        ratedW: 410,
-        wear: { motor: rnd() * 0.1, bearing: rnd() * 0.1, actuator: rnd() * 0.1, battery: 0, dust: 0.2 + rnd() * 0.3 },
-        health: { motorTemp: 30, vibration: 0.9, soiling: 0, actuatorCurrent: 0.95, batteryHealth: 1 },
-        risk: 0,
-      });
-    }
+  const slots =
+    site.slots ??
+    Array.from({ length: site.rows * site.cols }, (_, i) => {
+      const r = Math.floor(i / site.cols);
+      const c = i % site.cols;
+      return { dx: (c - (site.cols - 1) / 2) * site.pitchX, dy: ((site.rows - 1) / 2 - r) * site.pitchY, row: r, col: c };
+    });
+  for (const { dx, dy, row: r, col: c } of slots) {
+    const [lat, lon] = offset(site.lat, site.lon, dx, dy);
+    units.push({
+      id: `SS-${serial++}`,
+      serial: `NW${serial}`,
+      siteId: site.id,
+      row: r,
+      col: c,
+      lat,
+      lon,
+      firmware: "swarm-os 2.0.4",
+      hours: 0,
+      ratedW: 410,
+      wear: { motor: rnd() * 0.1, bearing: rnd() * 0.1, actuator: rnd() * 0.1, battery: 0, dust: 0.2 + rnd() * 0.3 },
+      health: { motorTemp: 30, vibration: 0.9, soiling: 0, actuatorCurrent: 0.95, batteryHealth: 1 },
+      risk: 0,
+    });
+  }
   SITES.push(site);
   ROBOTS.push(...units);
   return units;

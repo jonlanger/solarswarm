@@ -109,15 +109,20 @@ body {
 
 @utility bg-swarm {
   background-image: var(--grad-swarm);
+  /* paint under the border too, or a transparent border shows the gradient tiling at the edges */
+  background-origin: border-box;
 }
 @utility bg-swarm-soft {
   background-image: var(--grad-swarm-soft);
+  background-origin: border-box;
 }
 @utility bg-copper {
   background-image: var(--grad-copper);
+  background-origin: border-box;
 }
 @utility bg-dusk {
   background-image: var(--grad-dusk);
+  background-origin: border-box;
 }
 @utility text-swarm {
   background-image: linear-gradient(100deg, var(--violet-600), var(--violet-400) 60%, var(--copper-400));
