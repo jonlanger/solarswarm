@@ -14,11 +14,13 @@ import {
   Check,
   Cpu,
   Gauge,
+  Grab,
   Handshake,
   Headset,
   MapPinned,
   Move3d,
   Radar,
+  Satellite,
   ShieldCheck,
   Sun,
   Truck,
@@ -30,6 +32,7 @@ import { fmt } from "@/lib/sim/energy";
 import { PIPELINE, ROLE_META, SITES, sitesForRole, type Role } from "@/lib/sim/model";
 import { liveRobots, siteDay, unitsAt } from "@/lib/sim/store";
 import { cn } from "@/lib/cn";
+import { renderUrl } from "@/lib/renders";
 
 const RobotViewer = dynamic(() => import("@/components/three/scenes/RobotViewer").then((m) => m.RobotViewer), {
   ssr: false,
@@ -83,7 +86,7 @@ export function ProblemSection() {
         </div>
         <div className="relative aspect-[4/3] rounded-[var(--radius-xl)] overflow-hidden shadow-lg">
           <Image
-            src="/renders/array.jpg"
+            src={renderUrl("array")}
             alt="Aerial view of a deployed SolarSwarm array at golden hour"
             fill
             sizes="(min-width: 1024px) 50vw, 100vw"
@@ -103,9 +106,27 @@ export function ProblemSection() {
 const ANATOMY = [
   { Icon: Sun, t: "Dual-axis gimbal", d: "±60° tilt and 360° azimuth, following the real solar ephemeris." },
   { Icon: Move3d, t: "Telescoping mast", d: "Raises the panel above crops and brush, stows low for transport and wind." },
-  { Icon: Radar, t: "LiDAR + stereo vision", d: "Centimeter positioning, obstacle avoidance and row spacing on uneven ground." },
-  { Icon: BatteryCharging, t: "5 kWh LFP pack", d: "Drives itself and buffers energy. The site's distributed battery." },
-  { Icon: Truck, t: "All-terrain drive", d: "Four hub motors and lugged tires for dirt, gravel and grass." },
+  {
+    Icon: Radar,
+    t: "360° perception",
+    d: "Solid-state LiDAR and stereo cameras in the face, four corner cameras, and ultrasonics in both bumpers for the ground under the panel.",
+  },
+  {
+    Icon: Satellite,
+    t: "Dual RTK-GNSS",
+    d: "Antennas in the panel corners, above the shade: centimeter position and heading, even at a standstill.",
+  },
+  {
+    Icon: BatteryCharging,
+    t: "5 kWh LFP pack",
+    d: "A cassette that drops out of the belly at the swap station. Compute and fuses sit under a latched top hatch.",
+  },
+  { Icon: Truck, t: "All-terrain drive", d: "Four hub motors behind rolled arch flares; oscillating beams keep every wheel down." },
+  {
+    Icon: Grab,
+    t: "Built to be handled",
+    d: "Grab rails with lift slots, flush recovery points, a hitch and dock contacts: towable, liftable, forkable.",
+  },
   { Icon: Cpu, t: "Swarm OS", d: "Mesh networking, OTA updates and on-device health monitoring." },
 ];
 
@@ -116,7 +137,7 @@ export function RobotSection() {
         <div className="grid gap-12 lg:grid-cols-[1.2fr_1fr] items-center">
           <div className="relative rounded-[var(--radius-xl)] overflow-hidden aspect-square sm:aspect-[5/4] bg-[#0e0c14] shadow-lg">
             <Stage
-              poster="/renders/studio.jpg"
+              poster={renderUrl("studio")}
               posterAlt="SolarSwarm unit in a studio"
               className="absolute inset-0"
               camera={{ position: [3.2, 1.7, 3.4], fov: 35, near: 0.1, far: 100 }}
@@ -137,7 +158,7 @@ export function RobotSection() {
             </h2>
             <p className="mt-5 text-lg text-muted">
               Each SolarSwarm unit is a self-contained 410 W tracker on wheels: panel, gimbal, battery, compute and
-              sensors in one rugged chassis.
+              sensors in one sealed body. Pearl above, a molded black plinth below where it takes the knocks.
             </p>
             <div className="mt-8 grid sm:grid-cols-2 gap-x-6 gap-y-6">
               {ANATOMY.map(({ Icon, t, d }) => (
@@ -244,6 +265,70 @@ const AUDIENCES: Record<
   },
 };
 
+/* ------------------------------------------------------------------ */
+const ENERGY_STEPS = [
+  {
+    k: "01",
+    t: "Harvest",
+    d: "Every unit charges its own 5 kWh cassette from its panel while it tracks the sun.",
+  },
+  {
+    k: "02",
+    t: "Swap",
+    d: "When full, it climbs the ramp onto the swap station. A lift rises under the port, cones find the belly sockets, the latches let go and the cassette drops into the rack. A charged one goes back up. About 90 seconds, then it drives off the far ramp.",
+  },
+  {
+    k: "03",
+    t: "Deliver",
+    d: "The rack is the site battery. An inverter and grid tie at the end wall feed site loads or export. No trenching or cable runs across the field: the swarm carries the energy.",
+  },
+];
+
+export function EnergySection() {
+  return (
+    <section id="energy" className="py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid gap-12 lg:grid-cols-[1.25fr_1fr] items-center">
+          <figure className="relative rounded-[var(--radius-xl)] overflow-hidden aspect-[16/10] bg-surface-2 shadow-lg">
+            <Image
+              src={renderUrl("swap")}
+              alt="Robots climbing the ramp of the battery swap station; one unit parked over a swap port, the charging rack visible through the open service door"
+              fill
+              sizes="(min-width: 1024px) 58vw, 100vw"
+              className="object-cover"
+            />
+            <figcaption className="absolute left-3 bottom-3 glass rounded-full px-3 py-1 text-xs">
+              Swap station · dropped on site by the same truck
+            </figcaption>
+          </figure>
+          <div>
+            <Eyebrow>Energy logistics</Eyebrow>
+            <h2 className="mt-3 text-3xl sm:text-5xl font-semibold tracking-tight leading-[1.05]">
+              Power, carried by the pack.
+            </h2>
+            <p className="mt-5 text-lg text-muted">
+              Units don&apos;t need wiring to the site. They bring their energy to a battery swap station, a
+              half-height container the truck drops beside the array.
+            </p>
+            <ol className="mt-8 space-y-6">
+              {ENERGY_STEPS.map((st) => (
+                <li key={st.k} className="flex gap-4">
+                  <span className="font-mono tabular text-sm text-copper pt-0.5">{st.k}</span>
+                  <div>
+                    <div className="font-medium">{st.t}</div>
+                    <p className="text-sm text-muted mt-1">{st.d}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 export function AudienceSection() {
   const [role, setRole] = useState<Role>("buyer");
   const a = AUDIENCES[role];
@@ -381,7 +466,7 @@ export function OpsSection() {
   ];
   return (
     <section id="ops" className="relative overflow-hidden bg-violet-950 text-white py-24 sm:py-32">
-      <Image src="/renders/satellite.jpg" alt="" fill sizes="100vw" className="object-cover opacity-35" />
+      <Image src={renderUrl("satellite")} alt="" fill sizes="100vw" className="object-cover opacity-35" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgb(91_43_217/0.55),transparent_60%),linear-gradient(180deg,rgb(20_6_47/0.6),rgb(20_6_47/0.92))]" />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <div className="max-w-2xl">
@@ -414,11 +499,13 @@ export function OpsSection() {
 /* ------------------------------------------------------------------ */
 export function GallerySection() {
   const shots = [
-    { src: "/renders/formation.jpg", alt: "Robots queuing into formation rows", cap: "Queuing into formation", span: "sm:col-span-2 sm:row-span-2" },
-    { src: "/renders/detail_sensor.jpg", alt: "Close-up of LiDAR, stereo cameras and LED bar", cap: "LiDAR + stereo vision", span: "" },
-    { src: "/renders/detail_wheel.jpg", alt: "Close-up of the all-terrain wheel with copper hub", cap: "All-terrain hub drive", span: "" },
-    { src: "/renders/onboarding.jpg", alt: "Robots rolling off a truck through the pairing portal", cap: "Offloading at the portal", span: "sm:col-span-2" },
-    { src: "/renders/satellite.jpg", alt: "Top-down view of a fenced array with inverter pad", cap: "Site from above", span: "" },
+    { src: renderUrl("formation"), alt: "Units driving from a queue into formation rows", cap: "Queuing into formation", span: "sm:col-span-2 sm:row-span-2" },
+    { src: renderUrl("detail_sensor"), alt: "Close-up of the face mask: LiDAR, stereo cameras, three-projector lamps and the concentric light ring", cap: "Face mask: LiDAR + stereo", span: "" },
+    { src: renderUrl("detail_wheel"), alt: "Close-up of the rolled arch flare and the matte hub with gloss-black bolts", cap: "Arch flare + hub drive", span: "" },
+    { src: renderUrl("onboarding"), alt: "A flatbed unloading units down its ramp and through the wash and inspect gate", cap: "Offload, wash & inspect", span: "sm:col-span-2" },
+    { src: renderUrl("gate"), alt: "A unit mid-pass through the wash and inspect gate, brush roller and calibration targets visible", cap: "Wash & inspect gate", span: "" },
+    { src: renderUrl("swap"), alt: "Units climbing the battery swap station ramp; the charging rack visible through its open service door", cap: "Battery swap station", span: "sm:col-span-2" },
+    { src: renderUrl("satellite"), alt: "Top-down view of a fenced array with the swap station on its pad and the wash gate at the entrance", cap: "Site from above", span: "" },
   ];
   return (
     <section className="py-24 sm:py-32">
@@ -435,7 +522,7 @@ export function GallerySection() {
         </div>
         <dl className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            ["410 W", "per unit, monocrystalline"],
+            ["410 W", "per unit, all-black back-contact"],
             ["IP67", "sealed drive & electronics"],
             ["55 mph", "wind stow rating"],
             ["±15°", "slope capability"],

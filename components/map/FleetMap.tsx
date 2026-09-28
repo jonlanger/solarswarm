@@ -7,6 +7,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
 import type { RobotLive } from "@/lib/sim/store";
 import { siteBoundary, type Site } from "@/lib/sim/model";
+import { renderUrl } from "@/lib/renders";
 
 export type Basemap = "satellite" | "map";
 
@@ -224,7 +225,7 @@ export function FleetMap({
       const bl = lonLatOffset(s.lat, s.lon, -half, -half);
       m.addSource(`ortho-${s.id}`, {
         type: "image",
-        url: `/renders/ortho_${s.id}.png`,
+        url: renderUrl(`ortho_${s.id}`, "png"),
         coordinates: [tl, tr, br, bl],
       });
       m.addLayer({

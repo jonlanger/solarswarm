@@ -18,8 +18,32 @@ from mathutils import Euler, Vector
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import build_robot as br  # noqa: E402
+import props_v2 as pv  # noqa: E402
+import solarbot_v2 as v2  # noqa: E402
 
-OUT = os.path.join(br.ROOT, "public", "renders")
+OUT = os.environ.get("SS_RENDER_OUT", os.path.join(br.ROOT, "public", "renders"))
+
+
+def bot(name="SolarBot", low=False, coll=None):
+    """The v2 robot, assembled (internal packaging removed). low=True uses the lighter web mesh resolution for
+    background units; coll moves the hierarchy into a collection (for instancing)."""
+    saved = dict(v2.Q)
+    if low:
+        v2.Q.update(backshell_step=0.014, tire_n=4, rim_n=72, rim_prof=30)
+    root = v2.build(name)
+    v2.Q.update(saved)
+    for o in list(root.children_recursive):
+        if o.get("internal"):
+            bpy.data.objects.remove(o)
+    if coll is not None:
+        for o in [root] + list(root.children_recursive):
+            for c in list(o.users_collection):
+                c.objects.unlink(o)
+            coll.objects.link(o)
+    return root
+
+
+pose = v2.pose
 
 
 # ---------------------------------------------------------------------------
@@ -316,69 +340,16 @@ def grass_scatter(area=30, count=60000, center=(0, 0), avoid=None, seed=1):
 
 
 def flatbed_truck(loc=(0, 0, 0), rot_z=0.0):
-    """Cab-over flatbed (cab faces +Y), bed deck at z≈1.3, rear at y≈-4.3."""
-    M = br.materials()
-    paint = br._principled("Truck_Paint", br.srgb("#ecebf0"), rough=0.22, coat=1.0, coat_rough=0.04)
-    glass = br._principled("Truck_Glass", br.srgb("#07080c"), rough=0.02, coat=1.0, coat_rough=0.0)
-    light = br._principled("Headlight", (1, 1, 1), **{"Emission Color": (1, 0.95, 0.85, 1), "Emission Strength": 10})
-    tail = br._principled("Taillight", br.srgb("#ff3030"), **{"Emission Color": (1, 0.1, 0.08, 1), "Emission Strength": 6})
-    coll = bpy.context.scene.collection
-    root = bpy.data.objects.new("Truck", None)
-    coll.objects.link(root)
-    # frame + fuel tanks
-    br.box("frame", (1.0, 10.2, 0.28), (0, 0.3, 0.86), M["trim"], root, coll, bevel=0.03)
-    for sx in (-1, 1):
-        br.cyl(f"tank_{sx}", 0.28, 1.2, (sx * 0.95, 2.2, 0.85), M["alu"], root, coll, axis="Y", bevel=0.05)
-    # cab: lower body + upper cabin with raked windshield
-    br.box("cab_low", (2.45, 2.1, 1.1), (0, 4.45, 1.5), paint, root, coll, bevel=0.12, segments=6)
-    cab = br.box("cab_up", (2.45, 1.9, 1.15), (0, 4.35, 2.6), paint, root, coll, bevel=0.2, segments=6)
-    ws = br.box("windshield", (2.2, 0.04, 0.95), (0, 5.33, 2.55), glass, root, coll, bevel=0.04)
-    ws.rotation_euler[0] = math.radians(-8)
-    for sx in (-1, 1):
-        br.box(f"sidewin_{sx}", (0.04, 1.05, 0.72), (sx * 1.225, 4.55, 2.62), glass, root, coll, bevel=0.03)
-        br.box(f"mirror_{sx}", (0.08, 0.14, 0.42), (sx * 1.42, 5.25, 2.5), M["trim"], root, coll, bevel=0.03)
-        br.box(f"step_{sx}", (0.12, 0.6, 0.06), (sx * 1.2, 4.3, 0.75), M["alu"], root, coll, bevel=0.01)
-        br.box(f"headlight_{sx}", (0.42, 0.04, 0.14), (sx * 0.78, 5.51, 1.3), light, root, coll, bevel=0.02)
-        br.box(f"tail_{sx}", (0.25, 0.04, 0.1), (sx * 1.0, -4.62, 1.1), tail, root, coll, bevel=0.01)
-    br.box("grille", (1.5, 0.05, 0.55), (0, 5.51, 1.55), M["trim"], root, coll, bevel=0.02)
-    br.box("bumper", (2.5, 0.25, 0.3), (0, 5.55, 0.82), M["alu_dark"], root, coll, bevel=0.06)
-    br.box("brand_stripe", (2.47, 1.6, 0.08), (0, 4.4, 2.05), M["copper"], root, coll, bevel=0.02)
-    br.box("roof_led", (1.2, 0.05, 0.05), (0, 5.2, 3.2), M["led_front"], root, coll, bevel=0.01)
-    # bed
-    br.box("bed", (2.5, 8.2, 0.16), (0, -0.4, 1.2), M["alu_dark"], root, coll, bevel=0.03)
-    br.box("bed_edge", (2.54, 8.24, 0.05), (0, -0.4, 1.13), M["copper"], root, coll, bevel=0.01)
-    br.box("headboard", (2.4, 0.12, 1.1), (0, 3.3, 1.8), M["alu"], root, coll, bevel=0.03)
-    # wheels (front single, rear tandem duals)
-    for (y, n) in ((4.3, 1), (-2.3, 2), (-3.5, 2)):
-        for sx in (-1, 1):
-            wx = sx * (1.0 if n == 1 else 0.95)
-            br.cyl(f"twheel_{y}_{sx}", 0.52, 0.32 * n, (wx, y, 0.52), M["rubber"], root, coll, axis="X",
-                   verts=64, bevel=0.07, segments=5)
-            br.cyl(f"trim_{y}_{sx}", 0.3, 0.32 * n + 0.02, (wx, y, 0.52), M["alu"], root, coll, axis="X",
-                   verts=48, bevel=0.02)
-            br.cyl(f"hubnut_{y}_{sx}", 0.1, 0.32 * n + 0.05, (wx, y, 0.52), M["alu_dark"], root, coll, axis="X",
-                   verts=32)
-    br.box("fender_front", (2.6, 1.3, 0.08), (0, 4.3, 1.08), M["trim"], root, coll, bevel=0.03)
+    """Battery-electric cab-over transporter (props_v2.truck): cab faces +Y, bed deck at z≈1.28, rear at y≈-4.5."""
+    root = pv.truck()
     root.location = loc
     root.rotation_euler[2] = rot_z
     return root
 
 
-def portal(loc=(0, 0, 0), rot_z=0.0, width=3.2, height=2.8):
-    """SolarSwarm onboarding portal: arch with purple light strip — robots pair as they pass through."""
-    M = br.materials()
-    coll = bpy.context.scene.collection
-    root = bpy.data.objects.new("Portal", None)
-    coll.objects.link(root)
-    for sx in (-1, 1):
-        br.box(f"post_{sx}", (0.22, 0.3, height), (sx * width / 2, 0, height / 2), M["body"], root, coll,
-               bevel=0.05)
-        br.box(f"post_led_{sx}", (0.03, 0.04, height - 0.4), (sx * (width / 2 - 0.115), 0.0, height / 2),
-               M["led_front"], root, coll, bevel=0.01)
-        br.box(f"foot_{sx}", (0.5, 0.8, 0.08), (sx * width / 2, 0, 0.04), M["alu_dark"], root, coll, bevel=0.02)
-    br.box("beam", (width + 0.22, 0.34, 0.3), (0, 0, height + 0.15), M["body"], root, coll, bevel=0.06)
-    br.box("beam_copper", (width + 0.24, 0.36, 0.05), (0, 0, height + 0.02), M["copper"], root, coll, bevel=0.01)
-    br.box("beam_led", (width - 0.3, 0.04, 0.04), (0, 0.0, height - 0.02), M["led_front"], root, coll, bevel=0.01)
+def portal(loc=(0, 0, 0), rot_z=0.0):
+    """Wash & inspect gate (props_v2.portal): units enter from its -Y side, panels stowed."""
+    root = pv.portal()
     root.location = loc
     root.rotation_euler[2] = rot_z
     return root
@@ -392,8 +363,8 @@ def robot_grid(rows, cols, sx=2.2, sy=2.6, origin=(0, 0), jitter=0.0, tilt=0.5, 
     if not src:
         src = bpy.data.collections.new("BotSrc")
         bpy.context.scene.collection.children.link(src)
-        r = br.build_robot("BotProto", low=low, coll=src)
-        br.pose(r, tilt=tilt, azimuth=az)
+        r = bot("BotProto", low=low, coll=src)
+        pose(r, tilt=tilt, azimuth=az)
         bpy.context.view_layer.layer_collection.children["BotSrc"].exclude = True
     insts = []
     for i in range(rows):
@@ -425,8 +396,8 @@ def render(name):
 def shot_studio(args):
     setup_render(args.samples, (1600, 1600), args.preview)
     studio_world((0.03, 0.025, 0.045), 0.6)
-    r = br.build_robot()
-    br.pose(r, tilt=math.radians(30), azimuth=math.radians(150))
+    r = bot()
+    pose(r, tilt=math.radians(30), azimuth=math.radians(150))
     # seamless cyclorama
     bpy.ops.mesh.primitive_plane_add(size=30, location=(0, 0, 0))
     floor = bpy.context.active_object
@@ -447,8 +418,8 @@ def shot_hero(args):
     sky(sun_elev_deg=11, sun_rot_deg=-120, strength=0.28, dust=2.2)
     ground(600, "grass")
     grass_scatter(area=24, count=90000 if not args.preview else 15000)
-    r = br.build_robot()
-    br.pose(r, tilt=math.radians(62), azimuth=math.radians(112), mast=0.1)
+    r = bot()
+    pose(r, tilt=math.radians(62), azimuth=math.radians(112), mast=0.1)
     r.rotation_euler[2] = math.radians(8)
     hills()
     # the deployed array receding behind the hero unit
@@ -463,9 +434,9 @@ def shot_detail_sensor(args):
     sky(sun_elev_deg=14, sun_rot_deg=20, strength=0.3, dust=1.8)
     ground(200, "grass")
     grass_scatter(area=8, count=30000 if not args.preview else 6000)
-    r = br.build_robot()
-    br.pose(r, tilt=math.radians(35), azimuth=math.radians(30))
-    camera((0.55, 1.35, 0.42), (0, 0.5, 0.32), lens=70, dof=0.95, fstop=2.0)
+    r = bot()
+    pose(r, tilt=math.radians(35), azimuth=math.radians(30))
+    camera((0.8, 1.8, 0.46), (0.06, 0.66, 0.33), lens=62, dof=1.36, fstop=2.4)
     render("detail_sensor")
 
 
@@ -474,9 +445,9 @@ def shot_detail_wheel(args):
     sky(sun_elev_deg=22, sun_rot_deg=60, strength=0.3)
     ground(200, "grass")
     grass_scatter(area=8, count=30000 if not args.preview else 6000)
-    r = br.build_robot()
-    br.pose(r, tilt=math.radians(20), azimuth=0)
-    camera((1.35, 0.95, 0.22), (0.43, 0.4, 0.18), lens=60, dof=1.1, fstop=2.2)
+    r = bot()
+    pose(r, tilt=math.radians(20), azimuth=0)
+    camera((1.55, 1.05, 0.3), (0.45, 0.42, 0.2), lens=55, dof=1.2, fstop=2.4)
     render("detail_wheel")
 
 
@@ -525,32 +496,84 @@ def shot_onboarding(args):
     # robots still on the bed: panels flat, masts retracted
     for k, y in enumerate((2.1, 0.3, -1.5)):
         for sx in (-0.62, 0.62):
-            rr = br.build_robot(f"Bed{k}{sx}", low=True)
-            br.pose(rr, tilt=0, mast=-0.18)
+            rr = bot(f"Bed{k}{sx}", low=True)
+            pose(rr, tilt=0, mast=-0.18)
             rr.location = (sx, y, 1.28)
             rr.rotation_euler[2] = math.pi
     # rear ramp to ground
     rmat = br.materials()["alu"]
+    rail = br._principled("Gunmetal", br.srgb("#34353b"), metallic=1.0, rough=0.38)
     ramp = br.box("ramp", (1.3, 3.3, 0.05), (0, -5.95, 0.62), rmat, None, bpy.context.scene.collection, bevel=0.01)
-    ramp.rotation_euler[0] = math.radians(21.5)
     for sx in (-1, 1):
-        br.box(f"ramp_rail_{sx}", (0.05, 3.3, 0.08), (sx * 0.67, -5.95, 0.66), br.materials()["copper"], ramp, bpy.context.scene.collection)
+        br.box(f"ramp_rail_{sx}", (0.05, 3.3, 0.08), (sx * 0.67, -5.95, 0.66), rail, ramp, bpy.context.scene.collection)
+    ramp.rotation_euler[0] = math.radians(21.5)  # after parenting the rails, so they rotate with the deck
     # one robot rolling down the ramp
-    rr = br.build_robot("OnRamp", low=True)
-    br.pose(rr, tilt=0, mast=-0.18)
+    rr = bot("OnRamp", low=True)
+    pose(rr, tilt=0, mast=-0.18)
     rr.location = (0, -5.6, 0.79)
     rr.rotation_euler = (math.radians(-21.5), 0, math.pi)
-    # portal at the foot of the ramp
-    portal((0, -9.3, 0))
+    # wash & inspect gate at the foot of the ramp (turned so units enter from its -Y side as they travel -Y here)
+    portal((0, -9.3, 0), rot_z=math.pi)
     # robots through the portal, raising masts and fanning into a queue
     path = [(0.0, -11.2, 0), (1.3, -12.9, 0.3), (3.2, -14.0, 0.6), (5.4, -14.6, 0.9), (7.8, -14.9, 1.0)]
     for k, (x, y, t) in enumerate(path):
-        rb = br.build_robot(f"Out{k}", low=k > 1)
-        br.pose(rb, tilt=math.radians(35 * t), azimuth=math.radians(140) * t, mast=-0.18 + 0.26 * t)
+        rb = bot(f"Out{k}", low=k > 1)
+        pose(rb, tilt=math.radians(35 * t), azimuth=math.radians(140) * t, mast=-0.18 + 0.26 * t)
         rb.location = (x, y, 0)
         rb.rotation_euler[2] = math.pi + math.radians(-55 * t)
     camera((-6.8, -18.5, 2.3), (1.6, -8.6, 1.4), lens=32, dof=11.5, fstop=9)
     render("onboarding")
+
+
+def shot_swap(args):
+    """Battery swap station on site: units climb the ramp, drop a cassette into the rack, drive off charged."""
+    setup_render(args.samples, (2560, 1440), args.preview)
+    sky(sun_elev_deg=24, sun_rot_deg=-35, strength=0.3, dust=1.6)
+    ground(700, "desert")
+    hills()
+    robot_grid(7, 16, sx=2.3, sy=3.0, origin=(-22, 11), tilt=math.radians(45), az=math.radians(-60))
+    st = pv.swap_station(door_open=True)
+    st.rotation_euler[2] = math.radians(-90)  # lane runs along X, service door (rack visible) toward the camera
+    H = pv.SWAP_H + 0.03
+    slope = math.atan2(H, pv.RAMP_L)
+
+    def unit(name, loc, rz, pitch=0.0, low=True):
+        b = bot(name, low=low)
+        pose(b, tilt=0.0, mast=-0.18)
+        b.location, b.rotation_euler = loc, (pitch, 0, rz)
+        return b
+
+    ondeck = unit("OnDeck", (-pv.SWAP_PORTS[0], 0, H), math.radians(90), low=False)
+    for o in list(ondeck.children_recursive):  # cassette lowered into the lift
+        if "cassette" in o.name:
+            o.location.z -= 0.42
+    unit("OnDeck2", (-pv.SWAP_PORTS[1], 0, H), math.radians(90))
+    d = 2.4
+    unit("Climbing", (pv.SWAP_L / 2 + d, 0, H * (1 - d / pv.RAMP_L) + 0.02), math.radians(90), pitch=slope)
+    for k in range(3):
+        unit(f"Queue{k}", (pv.SWAP_L / 2 + pv.RAMP_L + 1.8 + k * 2.0, 0.2 * (k % 2), 0), math.radians(90))
+    d = 3.0
+    unit("Leaving", (-(pv.SWAP_L / 2 + d), 0, H * (1 - d / pv.RAMP_L) + 0.02), math.radians(90), pitch=-slope)
+    camera((6.8, -11.5, 3.1), (1.4, 0.4, 0.9), lens=28, dof=12.2, fstop=11)
+    render("swap")
+
+
+def shot_gate(args):
+    """A unit mid-pass through the wash & inspect gate, the array behind."""
+    setup_render(args.samples, (2400, 1600), args.preview)
+    sky(sun_elev_deg=20, sun_rot_deg=-60, strength=0.3, dust=1.6)
+    ground(500, "desert")
+    hills()
+    robot_grid(6, 12, sx=2.3, sy=3.0, origin=(-14, 9), tilt=math.radians(40), az=math.radians(-50))
+    portal((0, 0, 0))
+    b = bot("Washing")
+    pose(b, tilt=0.0, mast=-0.18)
+    b.location = (0, -0.3, 0.037)
+    nxt = bot("Next", low=True)
+    pose(nxt, tilt=0.0, mast=-0.18)
+    nxt.location = (0.1, -3.4, 0)
+    camera((3.4, -4.6, 1.55), (0, -0.4, 0.95), lens=30, dof=5.6, fstop=5.6)
+    render("gate")
 
 
 def shot_satellite(args):
@@ -566,12 +589,11 @@ def shot_satellite(args):
     br.box("road", (4.0, 400, 0.02), (-40, 0, 0.01), gravel, None, coll)
     br.box("road2", (200, 4.0, 0.02), (0, -34, 0.01), gravel, None, coll)
     br.box("spur", (4.0, 10, 0.02), (-30, -29, 0.01), gravel, None, coll)
-    br.box("pad", (14, 10, 0.03), (-30, -26, 0.015), pad, None, coll)
-    # inverter / storage containers on the pad
-    cont = br._principled("Container", br.srgb("#dcdce2"), rough=0.4)
-    for k in range(3):
-        br.box(f"cont{k}", (2.4, 6.0, 2.6), (-34 + k * 3.4, -26, 1.3), cont, None, coll, bevel=0.05)
-    br.box("cont_roof_copper", (2.4, 6.0, 0.05), (-27.2, -26, 2.62), br.materials()["copper"], None, coll)
+    br.box("pad", (6, 18, 0.03), (-33, -22, 0.015), pad, None, coll)
+    # battery swap station on the pad (lane along X) and the wash & inspect gate at the array entrance
+    st = pv.swap_station(door_open=False)
+    st.location = (-33, -22, 0)  # lane along Y: ramps (±8 m) stay on the pad, clear of the fence and the road
+    portal((-26.5, -31.5, 0), rot_z=math.radians(90))
     # fence line around the array
     fence = br._principled("Fence", br.srgb("#8a8a90"), metallic=1, rough=0.5)
     x0, x1, y0, y1 = -27, 25, -29, 31
@@ -631,10 +653,9 @@ def shot_ortho(args, site):
         br.box("fence", (sx, sy, 1.2), (cx, cy, 0.6), fence, None, coll)
     br.box("service_lane", (w + 8, 3.5, 0.02), (0, -h / 2 - 4, 0.01), gravel, None, coll)
     pad = br._principled("Pad", br.srgb("#9c968c"), rough=0.9)
-    br.box("pad", (10, 7, 0.03), (-w / 2 - 9, -h / 2 + 4, 0.015), pad, None, coll)
-    cont = br._principled("Container", br.srgb("#dcdce2"), rough=0.4)
-    br.box("inverter", (2.4, 6.0, 2.6), (-w / 2 - 9, -h / 2 + 4, 1.3), cont, None, coll, bevel=0.05)
-    br.box("roof", (2.42, 6.02, 0.05), (-w / 2 - 9, -h / 2 + 4, 2.62), br.materials()["copper"], None, coll)
+    br.box("pad", (6, 18, 0.03), (-w / 2 - 7, -h / 2 + 9, 0.015), pad, None, coll)
+    st = pv.swap_station(door_open=False)  # the site battery: units bring charged cassettes here
+    st.location = (-w / 2 - 7, -h / 2 + 9, 0)
     # centred grid, row 0 at the north edge (matches the sim)
     robot_grid(cfg["rows"], cfg["cols"], sx=cfg["px"], sy=cfg["py"],
                origin=(-(cfg["cols"] - 1) / 2 * cfg["px"], -(cfg["rows"] - 1) / 2 * cfg["py"]),
@@ -654,7 +675,7 @@ def shot_tracking(args):
     grass_scatter(area=20, count=40000 if not args.preview else 8000)
     bots = []
     for k, (x, y) in enumerate(((0, 0), (-2.1, -2.6), (2.1, -2.6), (-4.2, -5.2), (0, -5.2), (4.2, -5.2))):
-        rr = br.build_robot(f"T{k}", low=k > 0)
+        rr = bot(f"T{k}", low=k > 0)
         rr.location = (x, y, 0)
         bots.append(rr)
     for f in range(1, frames + 1):
@@ -666,7 +687,7 @@ def shot_tracking(args):
         s.keyframe_insert("sun_rotation", frame=f)
         s.keyframe_insert("sun_elevation", frame=f)
         for rr in bots:
-            objs = br.pose(rr, tilt=(math.pi / 2 - el), azimuth=-az)
+            objs = pose(rr, tilt=(math.pi / 2 - el), azimuth=-az)
             objs["panel_tilt"].keyframe_insert("rotation_euler", frame=f)
             objs["panel_azimuth"].keyframe_insert("rotation_euler", frame=f)
     camera((5.5, 6.5, 2.2), (0, -1.2, 0.9), lens=35)
@@ -686,6 +707,8 @@ SHOTS = {
     "formation": shot_formation,
     "onboarding": shot_onboarding,
     "satellite": shot_satellite,
+    "swap": shot_swap,
+    "gate": shot_gate,
     "tracking": shot_tracking,
 }
 

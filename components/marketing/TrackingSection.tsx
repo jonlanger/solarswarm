@@ -1,13 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Area, ComposedChart, CartesianGrid, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Stage } from "@/components/three/Stage";
 import { ChartTooltip, Legend, axisProps, gridProps, hourLabel } from "@/components/charts/chart-theme";
 import { irradiance, localMidnight, pointAt, simulateDay } from "@/lib/sim/energy";
 import { SITES } from "@/lib/sim/model";
 import { Card } from "@/components/ui";
+import { renderUrl } from "@/lib/renders";
 
 const TrackingScene = dynamic(() => import("@/components/three/scenes/TrackingScene").then((m) => m.TrackingScene), {
   ssr: false,
@@ -17,7 +18,10 @@ const SITE = SITES[0]; // Mojave Flats
 
 export function TrackingSection() {
   const [hour, setHour] = useState(9.5);
-  const today = useMemo(() => new Date(), []);
+  // Server HTML is prerendered at build time, so render a fixed reference day first and switch to the
+  // visitor's today after mount — otherwise the time-dependent readouts break hydration (React #418).
+  const [today, setToday] = useState(() => new Date("2026-06-21T12:00:00Z"));
+  useEffect(() => setToday(new Date()), []);
   const day = useMemo(() => simulateDay(SITE, today, 1, { derate: 0.92 }), [today]);
   const t = localMidnight(today, SITE.timezone).getTime() + hour * 3600_000;
   const irr = irradiance(SITE, new Date(t));
@@ -48,7 +52,7 @@ export function TrackingSection() {
         <div className="mt-12 grid gap-5 lg:grid-cols-[1.35fr_1fr]">
           <div className="relative rounded-[var(--radius-xl)] overflow-hidden border border-border bg-violet-950 aspect-[4/3] lg:aspect-auto lg:min-h-[520px]">
             <Stage
-              poster="/renders/hero.jpg"
+              poster={renderUrl("hero")}
               className="absolute inset-0"
               camera={{ position: [5.2, 2.1, 7.4], fov: 42, near: 0.1, far: 6000 }}
             >

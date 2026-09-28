@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
 import { Stage } from "@/components/three/Stage";
 import { buttonClass } from "@/components/ui";
+import { renderUrl } from "@/lib/renders";
 
 const HeroScene = dynamic(() => import("@/components/three/scenes/HeroScene").then((m) => m.HeroScene), {
   ssr: false,
@@ -15,7 +16,7 @@ export function Hero() {
     <section className="relative h-[100svh] min-h-[680px] overflow-hidden bg-violet-950 text-white">
       <Stage
         eager
-        poster="/renders/hero.jpg"
+        poster={renderUrl("hero")}
         posterAlt="SolarSwarm robot tracking the sun at golden hour in front of a deployed array"
         className="absolute inset-0"
         camera={{ position: [2.7, 0.72, -3.9], fov: 38, near: 0.1, far: 6000 }}

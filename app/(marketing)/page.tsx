@@ -4,6 +4,7 @@ import { TrackingSection } from "@/components/marketing/TrackingSection";
 import {
   AudienceSection,
   CtaSection,
+  EnergySection,
   GallerySection,
   OpsSection,
   ProblemSection,
@@ -18,6 +19,7 @@ export default function HomePage() {
       <DeploySection />
       <TrackingSection />
       <RobotSection />
+      <EnergySection />
       <AudienceSection />
       <OpsSection />
       <GallerySection />

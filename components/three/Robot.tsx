@@ -5,7 +5,7 @@ import { useFrame, type ThreeElements } from "@react-three/fiber";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { trackingPose } from "@/lib/sun";
-import { MODELS } from "./assets";
+import { DRACO, MODELS } from "./assets";
 
 export type Vec3 = [number, number, number];
 
@@ -57,7 +57,7 @@ export function cloneRobot(scene: THREE.Object3D) {
     mesh.receiveShadow = true;
     const m = mesh.material as THREE.MeshStandardMaterial;
     if (m.name.startsWith("LED_")) mesh.material = m.clone();
-    if (m.name === "PV_Cells") m.envMapIntensity = 1.4;
+    if (m.name.startsWith("PV_Cells")) m.envMapIntensity = 1.4;
   });
   return clone;
 }
@@ -93,7 +93,7 @@ export function Robot({
   damping = 3,
   ...group
 }: RobotProps) {
-  const { scene } = useGLTF(lod ? MODELS.robotLod : MODELS.robot);
+  const { scene } = useGLTF(lod ? MODELS.robotLod : MODELS.robot, DRACO);
   const obj = useMemo(() => cloneRobot(scene), [scene]);
   const rig = useMemo(() => bindRig(obj), [obj]);
   const target = useRef({ tilt, azimuth, mast });
@@ -145,5 +145,5 @@ export function Robot({
   );
 }
 
-useGLTF.preload(MODELS.robot);
-useGLTF.preload(MODELS.robotLod);
+useGLTF.preload(MODELS.robot, DRACO);
+useGLTF.preload(MODELS.robotLod, DRACO);

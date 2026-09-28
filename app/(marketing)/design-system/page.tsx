@@ -22,6 +22,7 @@ import {
   Toggle,
   type RobotStatus,
 } from "@/components/ui";
+import { renderUrl } from "@/lib/renders";
 
 const RAMPS = [
   { name: "Violet (Swarm)", steps: ["950", "900", "800", "700", "600", "500", "400", "300", "200", "100", "50"], v: "violet" },
@@ -225,7 +226,7 @@ export default function DesignSystemPage() {
             </CardBody>
           </Card>
           <div className="relative rounded-[var(--radius-lg)] overflow-hidden min-h-56 lg:col-span-2">
-            <Image src="/renders/array.jpg" alt="" fill sizes="100vw" className="object-cover" />
+            <Image src={renderUrl("array")} alt="" fill sizes="100vw" className="object-cover" />
             <div className="absolute left-4 top-4 glass rounded-[var(--radius-md)] p-4 max-w-xs">
               <div className="text-sm font-medium">Glass surface</div>
               <p className="text-xs text-muted mt-1">For overlays on 3D scenes, maps and imagery. Blur 16px, 140% saturation.</p>
@@ -246,12 +247,12 @@ export default function DesignSystemPage() {
         <p className="text-sm text-muted mt-4">Motion: 140 / 260 / 520 ms with ease-out cubic-bezier(0.22, 1, 0.36, 1); all animation is disabled under prefers-reduced-motion.</p>
       </Section>
 
-      <Section id="renders" title="3D & render assets" lead="One Blender-scripted model (blender/build_robot.py) produces the Cycles renders and the rigged GLB used live on the site and in the app.">
+      <Section id="renders" title="3D & render assets" lead="Blender-scripted models (blender/solarbot_v2.py, props_v2.py) produce the Cycles renders and the Draco-compressed GLBs used live on the site and in the app.">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {["studio", "hero", "detail_sensor", "detail_wheel", "array", "formation", "onboarding", "satellite"].map((r) => (
+          {["studio", "hero", "detail_sensor", "detail_wheel", "array", "formation", "onboarding", "gate", "swap", "satellite"].map((r) => (
             <figure key={r} className="rounded-[var(--radius-lg)] overflow-hidden border border-border bg-surface">
               <div className="relative aspect-[4/3]">
-                <Image src={`/renders/${r}.jpg`} alt={r} fill sizes="25vw" className="object-cover" />
+                <Image src={renderUrl(r)} alt={r} fill sizes="25vw" className="object-cover" />
               </div>
               <figcaption className="px-3 py-2 text-xs font-mono text-muted">/renders/{r}.jpg</figcaption>
             </figure>

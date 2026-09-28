@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { Stage } from "@/components/three/Stage";
 import { cn } from "@/lib/cn";
+import { renderUrl } from "@/lib/renders";
 
 const DeployScene = dynamic(() => import("@/components/three/scenes/DeployScene").then((m) => m.DeployScene), {
   ssr: false,
@@ -12,27 +13,33 @@ const DeployScene = dynamic(() => import("@/components/three/scenes/DeployScene"
 const STEPS = [
   {
     k: "01",
-    t: "Delivered by flatbed",
-    d: "One truck carries a full micro-array. No cranes, no pile drivers. The ramp drops and units roll off on their own.",
+    t: "Delivered by a convoy",
+    d: "Flatbeds carry six units each. No cranes, no pile drivers: each truck backs in, drops two ramps, and its units roll off on their own while the next truck waits its turn.",
     at: 0,
   },
   {
     k: "02",
-    t: "Pair at the portal",
-    d: "Each unit drives through the SolarSwarm portal, authenticates, syncs firmware and joins the site mesh. Its light turns from copper to violet.",
-    at: 0.13,
+    t: "Wash & inspect",
+    d: "Panel stowed, each unit rolls through the gate: mist, a floating brush and an air knife clean the glass, cameras image every cell, and targets on the posts check its sensors. Its light turns from copper to violet.",
+    at: 0.06,
   },
   {
     k: "03",
     t: "Drive into formation",
-    d: "The swarm plans spacing from the site survey (row pitch, shading and slope) and each robot drives to its slot.",
-    at: 0.42,
+    d: "The swarm plans spacing from the site survey (row pitch, shading and slope) and fills the farthest slots first, so no unit ever cuts through a parked one.",
+    at: 0.22,
   },
   {
     k: "04",
     t: "Raise, unfold, track",
     d: "Masts extend, panels unlock and the whole array starts following the sun. Energized the same week.",
-    at: 0.72,
+    at: 0.57,
+  },
+  {
+    k: "05",
+    t: "Swap and deliver",
+    d: "Full units stow, climb the swap station's ramp and stop over a port. The cassette drops out of the belly, a charged one comes back up, and they drive the loop back to their slots.",
+    at: 0.75,
   },
 ];
 
@@ -65,10 +72,10 @@ export function DeploySection() {
   }, []);
 
   return (
-    <section id="deploy" ref={ref} className="relative h-[520vh] bg-violet-950">
+    <section id="deploy" ref={ref} className="relative h-[640vh] bg-violet-950">
       <div className="sticky top-0 h-[100svh] overflow-hidden">
         <Stage
-          poster="/renders/onboarding.jpg"
+          poster={renderUrl("onboarding")}
           posterAlt="Robots rolling off a flatbed truck through the pairing portal"
           className="absolute inset-0"
           camera={{ position: [10, 2.2, 22], fov: 40, near: 0.1, far: 6000 }}

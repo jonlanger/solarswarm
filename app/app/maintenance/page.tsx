@@ -18,7 +18,7 @@ const ACTION: Record<Prediction["component"], string> = {
   "Tilt actuator": "Recalibrate, then replace actuator",
   "Battery pack": "Schedule pack swap",
   "Panel soiling": "Add to wash route",
-  LiDAR: "Clean & recalibrate sensor",
+  LiDAR: "Clean face-mask glazing & recalibrate LiDAR",
 };
 
 export default function MaintenancePage() {

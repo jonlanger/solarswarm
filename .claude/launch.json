@@ -4,8 +4,20 @@
     {
       "name": "web",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000
+    },
+    {
+      "name": "web-prod",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "NEXT_DIST_DIR=.next-prod npm run build && NEXT_DIST_DIR=.next-prod npm run start -- -p 3100"
+      ],
+      "port": 3100
     }
   ]
 }

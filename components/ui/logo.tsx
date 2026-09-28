@@ -1,26 +1,42 @@
+import { useId } from "react";
 import { cn } from "@/lib/cn";
 
-/** SolarSwarm mark: a hexagonal swarm cell with a copper sun core. */
+/**
+ * SolarSwarm mark: three strokes — the panel at 45° balanced on the mast, the mast, the base.
+ * Geometry comes from blender/logo.py (the same strokes are the robot's decal). The panel carries the swarm violet
+ * (lifted on dark grounds); mast and base are currentColor so they follow the text color / theme.
+ */
+export function LogoMark({ className, mono = false }: { className?: string; mono?: boolean }) {
+  const id = useId();
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={cn("size-7 shrink-0", className)}
+      fill="none"
+      strokeWidth={3.4}
+      strokeLinecap="round"
+      aria-hidden
+    >
+      {!mono && (
+        <defs>
+          <linearGradient id={id} gradientUnits="userSpaceOnUse" x1="9" y1="20" x2="23" y2="6">
+            <stop offset="0" stopColor="#5b2bd9" className="[stop-color:#2a0e61] dark:[stop-color:#5b2bd9]" />
+            <stop offset="0.55" stopColor="#7243f0" />
+            <stop offset="1" stopColor="#bb97ff" className="[stop-color:#9d6bff] dark:[stop-color:#bb97ff]" />
+          </linearGradient>
+        </defs>
+      )}
+      <line x1="5" y1="25.5" x2="27" y2="25.5" stroke="currentColor" />
+      <line x1="16" y1="13" x2="16" y2="25.5" stroke="currentColor" />
+      <line x1="9" y1="20" x2="23" y2="6" stroke={mono ? "currentColor" : `url(#${id})`} />
+    </svg>
+  );
+}
+
 export function Logo({ className, wordmark = true }: { className?: string; wordmark?: boolean }) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <svg viewBox="0 0 32 32" className="size-7 shrink-0" aria-hidden>
-        <defs>
-          <linearGradient id="ss-g" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#2a0e61" />
-            <stop offset="0.55" stopColor="#5b2bd9" />
-            <stop offset="1" stopColor="#9d6bff" />
-          </linearGradient>
-          <linearGradient id="ss-c" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#eec39a" />
-            <stop offset="0.5" stopColor="#b87333" />
-            <stop offset="1" stopColor="#7a4a1f" />
-          </linearGradient>
-        </defs>
-        <path d="M16 1.5 28.6 8.75v14.5L16 30.5 3.4 23.25V8.75Z" fill="url(#ss-g)" />
-        <path d="M16 7.5 23.4 11.75v8.5L16 24.5 8.6 20.25v-8.5Z" fill="none" stroke="rgb(255 255 255 / .35)" strokeWidth="1.2" />
-        <circle cx="16" cy="16" r="4.2" fill="url(#ss-c)" />
-      </svg>
+      <LogoMark />
       {wordmark && (
         <span className="font-semibold tracking-tight text-[17px]">
           Solar<span className="text-swarm">Swarm</span>

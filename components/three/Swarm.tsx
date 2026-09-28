@@ -4,7 +4,7 @@ import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { MODELS } from "./assets";
+import { DRACO, MODELS } from "./assets";
 import { bindRig } from "./Robot";
 
 export interface SwarmPose {
@@ -45,7 +45,7 @@ export function Swarm({
   poses: React.RefObject<SwarmPose[]>;
   castShadow?: boolean;
 }) {
-  const { scene } = useGLTF(MODELS.robotLod);
+  const { scene } = useGLTF(MODELS.robotLod, DRACO);
   const template = useMemo(() => scene.clone(true), [scene]);
   const rig = useMemo(() => bindRig(template), [template]);
   const parts = useMemo(() => {

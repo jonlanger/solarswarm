@@ -1,0 +1,164 @@
+[
+ {
+  "id": "panel_glass",
+  "label": "Cover glass",
+  "x": 0.4899,
+  "y": 0.1877
+ },
+ {
+  "id": "panel_cells",
+  "label": "Back-contact cell laminate",
+  "x": 0.4899,
+  "y": 0.2096
+ },
+ {
+  "id": "corner_11",
+  "label": "Frame extrusion + molded corner caps",
+  "x": 0.5572,
+  "y": 0.2861
+ },
+ {
+  "id": "panel_backshell",
+  "label": "Ripple back shell",
+  "x": 0.4899,
+  "y": 0.2541
+ },
+ {
+  "id": "hub_plate",
+  "label": "Mount hub + MPPT",
+  "x": 0.4902,
+  "y": 0.2767
+ },
+ {
+  "id": "tilt_housing",
+  "label": "Tilt slew drive",
+  "x": 0.4903,
+  "y": 0.3169
+ },
+ {
+  "id": "az_upper",
+  "label": "Azimuth slew drive",
+  "x": 0.4904,
+  "y": 0.3373
+ },
+ {
+  "id": "mast_inner",
+  "label": "Telescoping mast",
+  "x": 0.4907,
+  "y": 0.4199
+ },
+ {
+  "id": "gaiter_2",
+  "label": "Bellows seal + status ring",
+  "x": 0.4909,
+  "y": 0.507
+ },
+ {
+  "id": "gnss_F",
+  "label": "Dual RTK-GNSS antennas (panel corners)",
+  "x": 0.7663,
+  "y": 0.242
+ },
+ {
+  "id": "rail_R",
+  "label": "Roof rails: crew grab handles + lift slots",
+  "x": 0.4239,
+  "y": 0.5116
+ },
+ {
+  "id": "hatch_main",
+  "label": "Maintenance hatch + paddle latch",
+  "x": 0.4464,
+  "y": 0.496
+ },
+ {
+  "id": "cam_corner_FR",
+  "label": "Corner cameras (surround view)",
+  "x": 0.5285,
+  "y": 0.6217
+ },
+ {
+  "id": "shell_upper",
+  "label": "Pearl upper shell",
+  "x": 0.4911,
+  "y": 0.5485
+ },
+ {
+  "id": "led_wrap_front_R",
+  "label": "Wrap-around light signature",
+  "x": 0.538,
+  "y": 0.6221
+ },
+ {
+  "id": "mask_front",
+  "label": "Face mask: LiDAR, cameras, 3-projector lamps",
+  "x": 0.6408,
+  "y": 0.6091
+ },
+ {
+  "id": "lidar_body",
+  "label": "Solid-state LiDAR + stereo cameras",
+  "x": 0.6528,
+  "y": 0.6141
+ },
+ {
+  "id": "compute",
+  "label": "Compute module",
+  "x": 0.5382,
+  "y": 0.5942
+ },
+ {
+  "id": "cell_module_21",
+  "label": "Battery modules",
+  "x": 0.4782,
+  "y": 0.6193
+ },
+ {
+  "id": "plinth",
+  "label": "Black plinth: bumpers, rub rib, belly",
+  "x": 0.4915,
+  "y": 0.6641
+ },
+ {
+  "id": "arch_FR",
+  "label": "Rolled arch flare",
+  "x": 0.4447,
+  "y": 0.7327
+ },
+ {
+  "id": "liner_FR",
+  "label": "Wheel-well liner + axle boot",
+  "x": 0.4672,
+  "y": 0.7257
+ },
+ {
+  "id": "ultrasonic_front_3",
+  "label": "Ultrasonic array + flush recovery points",
+  "x": 0.6361,
+  "y": 0.7639
+ },
+ {
+  "id": "hitch_plate",
+  "label": "Flush hitch receiver + dock contacts",
+  "x": 0.3379,
+  "y": 0.5945
+ },
+ {
+  "id": "beam_F",
+  "label": "Oscillating drive beam",
+  "x": 0.5651,
+  "y": 0.7358
+ },
+ {
+  "id": "stator_FR",
+  "label": "Hub motor",
+  "x": 0.4228,
+  "y": 0.7631
+ },
+ {
+  "id": "tire_FR",
+  "label": "Block-tread tire + ripple rim",
+  "x": 0.3788,
+  "y": 0.782
+ }
+]

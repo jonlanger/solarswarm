@@ -391,7 +391,7 @@ def clear_scene():
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
 
-def export_glb(path, root):
+def export_glb(path, root, draco=True):
     bpy.ops.object.select_all(action="DESELECT")
 
     def sel(o):
@@ -413,6 +413,12 @@ def export_glb(path, root):
         export_animations=False,
         export_lights=False,
         export_cameras=False,
+        # web decodes with the self-hosted decoder in public/draco (components/three/assets.ts)
+        export_draco_mesh_compression_enable=draco,
+        export_draco_mesh_compression_level=6,
+        export_draco_position_quantization=14,
+        export_draco_normal_quantization=10,
+        export_draco_texcoord_quantization=12,
     )
 
 
