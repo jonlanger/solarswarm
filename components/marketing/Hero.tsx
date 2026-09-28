@@ -30,13 +30,7 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto max-w-7xl h-full px-4 sm:px-6 flex flex-col justify-center pt-16">
         <div className="max-w-xl">
-          <div className="inline-flex items-center gap-2 h-7 pl-1 pr-3 rounded-full glass !bg-white/10 !border-white/15 text-[12.5px] text-white/85">
-            <span className="h-5 px-2 rounded-full bg-copper text-[#2a1606] font-semibold text-[11px] inline-flex items-center">
-              NEW
-            </span>
-            Swarm OS 2.0: predictive maintenance for every unit
-          </div>
-          <h1 className="mt-6 text-[44px] sm:text-6xl lg:text-[76px] leading-[0.98] font-semibold tracking-[-0.035em]">
+          <h1 className="text-[44px] sm:text-6xl lg:text-[76px] leading-[0.98] font-semibold tracking-[-0.035em]">
             Solar fields that
             <br />
             <span className="bg-[linear-gradient(100deg,#d9c7ff,#9d6bff_45%,#e0a36a)] bg-clip-text text-transparent">
