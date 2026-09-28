@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Cpu, Gauge, MapPin, Thermometer, Waves, Zap } from "lucide-react";
+import { Cpu, Gauge, MapPin, Thermometer, WavesHorizontal, Zap } from "lucide-react";
 import { Stage } from "@/components/three/Stage";
 import { BatteryGauge, Badge, StatusPill, buttonClass, statusMeta } from "@/components/ui";
 import { fmt } from "@/lib/sim/energy";
@@ -47,7 +47,7 @@ export function Telemetry({ r }: { r: RobotLive }) {
     { Icon: Zap, k: "Output", v: `${Math.round(r.powerW)} W`, of: `${r.unit.ratedW} W rated` },
     { Icon: Gauge, k: "Panel", v: `${Math.round((r.tilt * 180) / Math.PI)}° tilt`, of: `${Math.round(((r.azimuth * 180) / Math.PI + 360) % 360)}° azimuth` },
     { Icon: Thermometer, k: "Drive motor", v: `${h.motorTemp.toFixed(1)} °C`, of: "limit 85 °C" },
-    { Icon: Waves, k: "Bearing vibration", v: `${h.vibration.toFixed(2)} mm/s`, of: "alert 4.5 mm/s" },
+    { Icon: WavesHorizontal, k: "Bearing vibration", v: `${h.vibration.toFixed(2)} mm/s`, of: "alert 4.5 mm/s" },
     { Icon: Cpu, k: "Tilt actuator", v: `${h.actuatorCurrent.toFixed(2)} A`, of: "nominal 1.1 A" },
     { Icon: MapPin, k: "Soiling loss", v: fmt.pct(h.soiling), of: "wash at 8%" },
   ];
@@ -55,12 +55,12 @@ export function Telemetry({ r }: { r: RobotLive }) {
     <div className="grid grid-cols-2 gap-2">
       {rows.map(({ Icon, k, v, of }) => (
         <div key={k} className="rounded-[var(--radius-md)] bg-surface-2 p-3">
-          <div className="flex items-center gap-1.5 text-[11px] text-muted">
+          <div className="flex items-center gap-1.5 text-[0.6875rem] text-muted">
             <Icon className="size-3.5" />
             {k}
           </div>
-          <div className="font-mono tabular text-[15px] font-semibold mt-1">{v}</div>
-          <div className="text-[11px] text-subtle">{of}</div>
+          <div className="font-mono tabular text-[0.9375rem] font-semibold mt-1">{v}</div>
+          <div className="text-[0.6875rem] text-subtle">{of}</div>
         </div>
       ))}
     </div>

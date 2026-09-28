@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Flame, Layers } from "lucide-react";
+import { Flame, Layers, TriangleAlert } from "lucide-react";
 import { FleetMapLazy } from "@/components/map/FleetMapLazy";
 import { RobotSummary, TwinCanvas } from "@/components/app/RobotTwin";
 import { Segmented, Sheet, Toggle, statusMeta, type RobotStatus } from "@/components/ui";
@@ -63,7 +63,13 @@ export default function MapPage() {
                     {s.robots.length} units · {s.sunUp ? fmt.kw(s.kw) : "night · stowed"}
                   </span>
                 </span>
-                {faults > 0 && <span className="text-xs text-danger font-mono">{faults} ⚠</span>}
+                {faults > 0 && (
+                  <span className="inline-flex items-center gap-1 text-xs text-danger font-mono">
+                    <TriangleAlert className="size-3" aria-hidden />
+                    {faults}
+                    <span className="sr-only"> faulted</span>
+                  </span>
+                )}
               </button>
             );
           })}
@@ -98,7 +104,7 @@ export default function MapPage() {
 
       {/* legend */}
       <div className="absolute bottom-8 left-3 glass rounded-[var(--radius-md)] px-3 py-2.5 shadow-md">
-        <div className="flex items-center gap-1.5 text-[11px] text-muted mb-1.5">
+        <div className="flex items-center gap-1.5 text-[0.6875rem] text-muted mb-1.5">
           <Layers className="size-3.5" /> Unit status (zoom in)
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-1">

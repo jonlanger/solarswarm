@@ -12,7 +12,6 @@ const links = [
   { href: "/#tracking", label: "Sun tracking" },
   { href: "/#platform", label: "Platform" },
   { href: "/#ops", label: "SolarSwarm Ops" },
-  { href: "/design-system", label: "Design system" },
 ];
 
 export function SiteNav() {
@@ -34,7 +33,7 @@ export function SiteNav() {
         overHero ? "bg-transparent border-b border-transparent" : "glass border-x-0 border-t-0",
       )}
     >
-      <nav className="mx-auto max-w-7xl h-16 px-4 sm:px-6 flex items-center gap-6">
+      <nav aria-label="Main" className="mx-auto max-w-7xl h-16 px-4 sm:px-6 flex items-center gap-6">
         <Link href="/" aria-label="SolarSwarm home" className={cn(overHero && "text-white")}>
           <Logo />
         </Link>
@@ -44,7 +43,7 @@ export function SiteNav() {
               key={l.href}
               href={l.href}
               className={cn(
-                "px-3 h-9 inline-flex items-center rounded-[var(--radius-sm)] text-[13.5px] transition",
+                "px-3 h-9 inline-flex items-center rounded-[var(--radius-sm)] text-[0.8438rem] transition",
                 overHero ? "text-white/80 hover:text-white hover:bg-white/10" : "text-muted hover:text-text hover:bg-surface-2",
               )}
             >
@@ -59,6 +58,8 @@ export function SiteNav() {
           </Link>
           <IconButton
             label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+            aria-controls="site-menu"
             className={cn("lg:hidden", overHero && "text-white hover:bg-white/10")}
             onClick={() => setOpen((v) => !v)}
           >
@@ -67,7 +68,7 @@ export function SiteNav() {
         </div>
       </nav>
       {open && (
-        <div className="lg:hidden px-4 pb-4 flex flex-col gap-1">
+        <div id="site-menu" className="lg:hidden px-4 pb-4 flex flex-col gap-1 max-h-[calc(100dvh-4rem)] overflow-y-auto">
           {links.map((l) => (
             <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="h-11 flex items-center px-3 rounded-[var(--radius-sm)] hover:bg-surface-2">
               {l.label}

@@ -46,12 +46,13 @@ export const useSim = create<SimState>((set) => ({
 }));
 
 /** Drive the sim clock (mount once in the app shell). */
-export function useSimClock(intervalMs = 1000) {
+export function useSimClock(intervalMs = 1000, paused = false) {
   const advance = useSim((s) => s.advance);
   useEffect(() => {
+    if (paused) return;
     const id = setInterval(() => advance(intervalMs), intervalMs);
     return () => clearInterval(id);
-  }, [advance, intervalMs]);
+  }, [advance, intervalMs, paused]);
 }
 
 /* ----------------------------- derived data ----------------------------- */

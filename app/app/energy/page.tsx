@@ -101,7 +101,7 @@ export default function EnergyPage() {
         <StatTile label="Grid import" value={fmt.kwh(totals.imp)} icon={<PlugZap className="size-4" />} deltaGoodWhen="down" />
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+      <div className="mt-4 grid gap-4 grid-cols-1 xl:grid-cols-[1.6fr_1fr]">
         <Panel title="Power flows today · kW" subtitle="Positive: generation, charging and export · negative: battery discharge and grid import">
           <Legend
             items={[
@@ -175,7 +175,7 @@ export default function EnergyPage() {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+      <div className="mt-4 grid gap-4 grid-cols-1 xl:grid-cols-[1.6fr_1fr]">
         <Panel
           title="Last 14 days · tracking vs. fixed tilt"
           subtitle={`Tracking added ${fmt.pct(history.reduce((a, h) => a + h.tracking, 0) / Math.max(1, history.reduce((a, h) => a + h.fixed, 0)) - 1, 0)} more energy than an equivalent fixed-tilt array`}

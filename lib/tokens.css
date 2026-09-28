@@ -190,3 +190,82 @@
   --shadow-glow: 0 0 0 1px rgb(157 107 255 / 0.35), 0 10px 50px -10px rgb(157 107 255 / 0.55);
   --ring: 0 0 0 3px rgb(157 107 255 / 0.4);
 }
+
+/* ---- Accessibility: increased contrast ----
+ * Opt-in via Settings (data-contrast="more") or the OS (prefers-contrast: more) unless forced to "standard".
+ * Lifts secondary text to ≥ 7:1 and borders to ≥ 3:1 against surfaces.
+ */
+:root[data-contrast="more"] {
+  --text: #0b0912;
+  --text-muted: #3d384a;
+  --text-subtle: #4f4960;
+  --border: #9a93a9;
+  --border-strong: #6b6580;
+  --primary: var(--violet-700);
+  --primary-soft-fg: var(--violet-800);
+  --danger: #b3161d;
+  --success: #0f7a4f;
+  --warning: #955a07;
+  --chart-grid: #c9c2d4;
+  --chart-axis: #4f4960;
+}
+:root[data-theme="dark"][data-contrast="more"] {
+  --text: #ffffff;
+  --text-muted: #d9d4e3;
+  --text-subtle: #bdb6cb;
+  --border: #5a546b;
+  --border-strong: #8a849a;
+  --primary: var(--violet-300);
+  --primary-soft-fg: var(--violet-200);
+  --danger: #ff8a8f;
+  --success: #62e0a6;
+  --warning: #ffc070;
+  --chart-grid: #3a3548;
+  --chart-axis: #bdb6cb;
+}
+@media (prefers-contrast: more) {
+  :root:not([data-contrast]) {
+    --text: #0b0912;
+    --text-muted: #3d384a;
+    --text-subtle: #4f4960;
+    --border: #9a93a9;
+    --border-strong: #6b6580;
+  }
+  :root[data-theme="dark"]:not([data-contrast]) {
+    --text: #ffffff;
+    --text-muted: #d9d4e3;
+    --text-subtle: #bdb6cb;
+    --border: #5a546b;
+    --border-strong: #8a849a;
+  }
+}
+
+/* ---- Accessibility: colour-vision-safe palette (Okabe–Ito) ----
+ * Status and chart hues chosen to stay distinct under protan / deutan / tritan simulation.
+ */
+:root[data-palette="cvd"] {
+  --status-tracking: #0072b2;
+  --status-charging: #e69f00;
+  --status-moving: #009e73;
+  --status-docked: #6b6580;
+  --status-fault: #d55e00;
+  --chart-1: #0072b2;
+  --chart-2: #e69f00;
+  --chart-3: #009e73;
+  --chart-4: #56b4e9;
+  --chart-5: #d55e00;
+  --chart-6: #cc79a7;
+}
+:root[data-theme="dark"][data-palette="cvd"] {
+  --status-tracking: #56b4e9;
+  --status-charging: #f0b53c;
+  --status-moving: #2cc99a;
+  --status-docked: #8a849a;
+  --status-fault: #ff7a2e;
+  --chart-1: #56b4e9;
+  --chart-2: #f0b53c;
+  --chart-3: #2cc99a;
+  --chart-4: #8fd0f5;
+  --chart-5: #ff7a2e;
+  --chart-6: #e08fbd;
+}

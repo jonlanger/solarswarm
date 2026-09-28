@@ -83,7 +83,7 @@ export default function OverviewPage() {
         ))}
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[1.5fr_1fr]">
+      <div className="mt-4 grid gap-4 grid-cols-1 xl:grid-cols-[1.5fr_1fr]">
         <Panel
           title="Fleet map"
           subtitle="Sentinel-2 imagery · zoom in to see every unit"
@@ -115,7 +115,7 @@ export default function OverviewPage() {
         </Panel>
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[1.5fr_1fr]">
+      <div className="mt-4 grid gap-4 grid-cols-1 xl:grid-cols-[1.5fr_1fr]">
         <Panel title="Energy today · kW" subtitle="Generation vs. site load (all selected sites)">
           <EnergyTodayChart sites={fleet.sites} now={now} />
         </Panel>

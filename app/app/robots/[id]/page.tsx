@@ -58,7 +58,7 @@ export default function RobotDetailPage({ params }: { params: Promise<{ id: stri
         <ArrowLeft className="size-4" /> Robots
       </Link>
       <PageHeader title={`Unit ${unit.id}`} subtitle={`${site.name} · ${site.region}`} />
-      <div className="grid gap-4 xl:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-4 grid-cols-1 xl:grid-cols-[1.4fr_1fr]">
         <div className="space-y-4 min-w-0">
           <Card className="overflow-hidden">
             <TwinCanvas r={live} className="h-[420px] bg-[#0e0c14]" />

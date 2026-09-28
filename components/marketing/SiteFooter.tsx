@@ -15,7 +15,7 @@ export function SiteFooter() {
         {[
           { h: "Product", l: [["Robots", "/#robot"], ["Deployment", "/#deploy"], ["Sun tracking", "/#tracking"]] },
           { h: "Platform", l: [["Fleet map", "/app/map"], ["Energy", "/app/energy"], ["Maintenance", "/app/maintenance"]] },
-          { h: "Company", l: [["Design system", "/design-system"], ["Open the platform", "/app"]] },
+          { h: "Company", l: [["Open the platform", "/app"]] },
         ].map((c) => (
           <div key={c.h}>
             <div className="text-xs font-medium uppercase tracking-wider text-subtle">{c.h}</div>

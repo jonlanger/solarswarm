@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Bell, Plus, Settings, Sun, Zap } from "lucide-react";
+import { ArrowDownUp, Bell, Copy, Download, MapPin, MoreHorizontal, Pencil, Plus, Settings, Sun, Trash2, Zap } from "lucide-react";
 import {
   Badge,
   BatteryGauge,
@@ -12,8 +12,10 @@ import {
   CardHeader,
   IconButton,
   Logo,
+  Menu,
   RingGauge,
   Segmented,
+  Select,
   Sparkline,
   StatTile,
   StatusPill,
@@ -68,6 +70,8 @@ export default function DesignSystemPage() {
   const [seg, setSeg] = useState("day");
   const [tab, setTab] = useState("overview");
   const [on, setOn] = useState(true);
+  const [site, setSite] = useState("mojave");
+  const [sort, setSort] = useState("risk");
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-28 pb-20">
       <div className="rounded-[var(--radius-xl)] bg-swarm text-white p-8 sm:p-12 relative overflow-hidden shadow-glow">
@@ -107,7 +111,7 @@ export default function DesignSystemPage() {
                 {r.steps.map((s) => (
                   <div key={s}>
                     <div className="h-14 rounded-[var(--radius-sm)] border border-border" style={{ background: `var(--${r.v}-${s})` }} />
-                    <div className="text-[11px] text-muted font-mono mt-1">{s}</div>
+                    <div className="text-[0.6875rem] text-muted font-mono mt-1">{s}</div>
                   </div>
                 ))}
               </div>
@@ -137,7 +141,7 @@ export default function DesignSystemPage() {
             <div key={t} className="rounded-[var(--radius-md)] border border-border bg-surface p-3">
               <div className="h-2 rounded-full" style={{ background: `var(${t})` }} />
               <div className="text-sm mt-3">{l}</div>
-              <div className="text-[11px] text-muted font-mono">{t}</div>
+              <div className="text-[0.6875rem] text-muted font-mono">{t}</div>
             </div>
           ))}
         </div>
@@ -161,7 +165,7 @@ export default function DesignSystemPage() {
       </Section>
 
       <Section id="components" title="Components">
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader title="Buttons" subtitle="Primary (swarm), copper, secondary, outline, ghost, danger" />
             <CardBody className="flex flex-wrap gap-2">
@@ -200,10 +204,10 @@ export default function DesignSystemPage() {
           </div>
           <Card>
             <CardHeader title="Gauges" />
-            <CardBody className="flex items-center gap-8">
+            <CardBody className="flex flex-wrap items-center gap-6 sm:gap-8">
               <RingGauge value={99.2} label="availability" />
               <RingGauge value={71} label="state of charge" color="var(--accent)" />
-              <div className="flex-1 space-y-3">
+              <div className="flex-1 min-w-[10rem] space-y-3">
                 <BatteryGauge value={86} />
                 <BatteryGauge value={24} />
                 <BatteryGauge value={9} />
@@ -211,11 +215,64 @@ export default function DesignSystemPage() {
             </CardBody>
           </Card>
           <Card>
-            <CardHeader title="Navigation & inputs" />
+            <CardHeader title="Navigation & inputs" subtitle="Segmented controls and tabs use roving focus: Tab in, arrow keys to switch." />
             <CardBody className="space-y-5">
-              <Segmented value={seg} onChange={setSeg} options={[{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }]} />
-              <Tabs value={tab} onChange={setTab} tabs={[{ value: "overview", label: "Overview" }, { value: "energy", label: "Energy" }, { value: "health", label: "Health" }]} />
+              <Segmented label="Range" value={seg} onChange={setSeg} options={[{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }]} />
+              <Tabs label="Robot detail" value={tab} onChange={setTab} tabs={[{ value: "overview", label: "Overview" }, { value: "energy", label: "Energy" }, { value: "health", label: "Health" }]} />
               <Toggle checked={on} onChange={setOn} label="Generation heatmap" />
+            </CardBody>
+          </Card>
+          <Card>
+            <CardHeader
+              title="Select & menu"
+              subtitle="Our own listbox and action menu. Never the browser's native popup, so they match the theme on every OS."
+            />
+            <CardBody className="space-y-5">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Select
+                  label="Site"
+                  icon={<MapPin />}
+                  value={site}
+                  onChange={setSite}
+                  options={[
+                    { value: "mojave", label: "Mojave Flats", description: "San Bernardino County, CA" },
+                    { value: "permian", label: "Permian Pump Station 7", description: "Midland Basin, TX" },
+                    { value: "piedmont", label: "Piedmont Dairy", description: "Rowan County, NC" },
+                    { value: "closed", label: "Kern Ridge", description: "Decommissioned", disabled: true },
+                  ]}
+                />
+                <Select
+                  label="Sort"
+                  size="sm"
+                  icon={<ArrowDownUp />}
+                  value={sort}
+                  onChange={setSort}
+                  options={[
+                    { value: "risk", label: "Risk (highest first)" },
+                    { value: "output", label: "Output (highest first)" },
+                    { value: "battery", label: "Battery (lowest first)" },
+                  ]}
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <Menu
+                  label="Unit actions"
+                  align="start"
+                  triggerClassName="border border-border-strong"
+                  items={[
+                    { label: "Rename", icon: <Pencil />, hint: "R" },
+                    { label: "Duplicate layout", icon: <Copy /> },
+                    { label: "Export telemetry", icon: <Download /> },
+                    { separator: true },
+                    { label: "Decommission", icon: <Trash2 />, danger: true },
+                  ]}
+                >
+                  <MoreHorizontal className="size-4" />
+                </Menu>
+                <span className="text-xs text-muted">
+                  Keyboard: arrows, Home/End, type-ahead, Enter, Esc. Phones get a bottom sheet with 48px rows.
+                </span>
+              </div>
             </CardBody>
           </Card>
           <Card>

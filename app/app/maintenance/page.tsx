@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { CheckCircle2, ClipboardList, Droplets, LifeBuoy, ShieldCheck, Timer } from "lucide-react";
+import { CircleCheck, ClipboardList, MapPin, Droplets, LifeBuoy, ShieldCheck, Timer } from "lucide-react";
 import { PageHeader } from "@/components/app/AppShell";
 import { Panel, RiskDial, TicketList } from "@/components/app/widgets";
-import { Badge, Button, StatTile, StatusPill } from "@/components/ui";
+import { Badge, Button, Select, StatTile, StatusPill } from "@/components/ui";
 import { fmt } from "@/lib/sim/energy";
 import { TICKETS, type Prediction } from "@/lib/sim/model";
 import { getSite, useSim } from "@/lib/sim/store";
@@ -59,7 +59,7 @@ export default function MaintenancePage() {
         <StatTile label="Median time to resolve" value="6.4 h" icon={<Timer className="size-4" />} delta={-18} deltaGoodWhen="down" />
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+      <div className="mt-4 grid gap-4 grid-cols-1 xl:grid-cols-[1.6fr_1fr]">
         <Panel
           title={role === "buyer" ? "Upcoming service on your sites" : "Failure forecast"}
           subtitle={`${predictions.length} units flagged · sorted by time to failure`}
@@ -106,7 +106,7 @@ export default function MaintenancePage() {
                       <td className="px-5 text-right whitespace-nowrap">
                         {wo ? (
                           <span className="inline-flex items-center gap-1 text-xs text-success">
-                            <CheckCircle2 className="size-3.5" /> {wo}
+                            <CircleCheck className="size-3.5" /> {wo}
                           </span>
                         ) : role === "buyer" ? (
                           <span className="text-xs text-muted">Handled by SolarSwarm</span>
@@ -178,19 +178,16 @@ export default function MaintenancePage() {
                 className="w-full h-9 px-3 rounded-[var(--radius-sm)] border border-border bg-surface text-sm outline-none focus:border-primary"
               />
               <div className="flex gap-2">
-                <select
-                  aria-label="Site"
+                <Select
+                  label="Site"
+                  hideLabel
+                  icon={<MapPin />}
+                  className="flex-1"
                   value={draft.site}
-                  onChange={(e) => setDraft((d) => ({ ...d, site: e.target.value }))}
-                  className="flex-1 h-9 px-2 rounded-[var(--radius-sm)] border border-border bg-surface text-sm"
-                >
-                  {fleet.sites.map((s) => (
-                    <option key={s.site.id} value={s.site.id}>
-                      {s.site.name}
-                    </option>
-                  ))}
-                </select>
-                <Button size="md" type="submit">
+                  onChange={(site) => setDraft((d) => ({ ...d, site }))}
+                  options={fleet.sites.map((s) => ({ value: s.site.id, label: s.site.name, description: s.site.region }))}
+                />
+                <Button size="md" type="submit" className="h-9 shrink-0">
                   Submit
                 </Button>
               </div>

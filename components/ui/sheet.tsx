@@ -28,14 +28,16 @@ export function Sheet({
   return (
     <aside
       aria-hidden={!open}
+      inert={!open}
+      aria-label={typeof title === "string" ? title : undefined}
       className={cn(
-        "fixed z-40 top-0 right-0 h-dvh w-full sm:w-[420px] bg-surface border-l border-border shadow-lg flex flex-col transition-transform duration-300 ease-[var(--ease-out)]",
-        open ? "translate-x-0" : "translate-x-full",
+        "fixed z-40 top-0 right-0 h-dvh w-full sm:w-[420px] bg-surface border-l border-border shadow-lg flex flex-col transition-[transform,visibility] duration-300 ease-[var(--ease-out)]",
+        open ? "translate-x-0" : "translate-x-full invisible",
         className,
       )}
     >
       <div className="flex items-center justify-between h-14 px-5 border-b border-border shrink-0">
-        <div className="font-semibold text-[15px] truncate">{title}</div>
+        <div className="font-semibold text-[0.9375rem] truncate">{title}</div>
         <IconButton label="Close" size="sm" onClick={onClose}>
           <X className="size-4" />
         </IconButton>

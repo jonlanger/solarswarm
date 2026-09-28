@@ -38,7 +38,7 @@ export function Logo({ className, wordmark = true }: { className?: string; wordm
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <LogoMark />
       {wordmark && (
-        <span className="font-semibold tracking-tight text-[17px]">
+        <span className="font-semibold tracking-tight text-[1.062rem]">
           Solar<span className="text-swarm">Swarm</span>
         </span>
       )}

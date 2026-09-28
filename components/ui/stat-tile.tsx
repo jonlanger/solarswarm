@@ -32,25 +32,31 @@ export function StatTile({
         className,
       )}
     >
-      <div className="flex items-center justify-between text-[13px] text-muted">
-        <span className="flex items-center gap-2 truncate">
-          {icon}
-          {label}
+      {/* wraps: when the tile is narrow (small screens, large text) the delta drops below the label */}
+      <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1 text-[0.8125rem] text-muted">
+        <span className="flex min-w-0 items-start gap-2 leading-snug">
+          {icon && (
+            <span className="mt-px shrink-0 [&_svg]:size-4" aria-hidden>
+              {icon}
+            </span>
+          )}
+          <span className="min-w-0">{label}</span>
         </span>
         {delta !== undefined && (
           <span
             className={cn(
-              "inline-flex items-center gap-0.5 text-xs font-medium tabular",
+              "ml-auto inline-flex shrink-0 items-center gap-0.5 text-xs font-medium tabular",
               good ? "text-success" : "text-danger",
             )}
           >
             {up ? <ArrowUpRight className="size-3.5" /> : <ArrowDownRight className="size-3.5" />}
+            <span className="sr-only">{up ? "up" : "down"} </span>
             {Math.abs(delta).toFixed(1)}%
           </span>
         )}
       </div>
-      <div className="flex items-end justify-between gap-3">
-        <div className="font-mono tabular text-[22px] 2xl:text-[26px] leading-none font-semibold tracking-tight whitespace-nowrap">
+      <div className="mt-auto flex items-end justify-between gap-3">
+        <div className="font-mono tabular text-[1.375rem] 2xl:text-[1.625rem] leading-none font-semibold tracking-tight whitespace-nowrap">
           {value}
           {unit && <span className="text-sm text-muted font-sans font-normal ml-1">{unit}</span>}
         </div>

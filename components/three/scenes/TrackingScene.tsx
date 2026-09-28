@@ -31,7 +31,7 @@ function FixedPanel({ position, tilt }: { position: Vec3; tilt: number }) {
         </mesh>
       </group>
       <Html position={[0, 2.35, 0]} center distanceFactor={9} zIndexRange={[10, 0]}>
-        <div className="whitespace-nowrap rounded-full bg-black/55 text-white/80 text-[11px] px-2.5 py-1 backdrop-blur">
+        <div className="whitespace-nowrap rounded-full bg-black/55 text-white/80 text-[0.6875rem] px-2.5 py-1 backdrop-blur">
           Fixed tilt
         </div>
       </Html>
@@ -58,7 +58,7 @@ export function TrackingScene({ sun, latitude }: { sun: Vec3; latitude: number }
       ))}
       <FixedPanel position={[2.9, 0, 2.0]} tilt={(latitude * Math.PI) / 180} />
       <Html position={[0, 2.6, 0]} center distanceFactor={9} zIndexRange={[10, 0]}>
-        <div className="whitespace-nowrap rounded-full bg-[#5b2bd9]/80 text-white text-[11px] px-2.5 py-1 backdrop-blur">
+        <div className="whitespace-nowrap rounded-full bg-[#5b2bd9]/80 text-white text-[0.6875rem] px-2.5 py-1 backdrop-blur">
           SolarSwarm dual-axis
         </div>
       </Html>

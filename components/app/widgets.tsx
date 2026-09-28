@@ -13,7 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ArrowUpRight, MessageSquare } from "lucide-react";
+import { ArrowUpRight, MessageSquare, TriangleAlert } from "lucide-react";
 import { ChartTooltip, Legend, axisProps, gridProps, hourLabel } from "@/components/charts/chart-theme";
 import { Badge, BatteryGauge, Card, CardHeader, StatusPill, statusMeta, type RobotStatus } from "@/components/ui";
 import { fmt, pointAt, STEP_MIN } from "@/lib/sim/energy";
@@ -78,7 +78,11 @@ export function StatusBreakdown({ byStatus, total }: { byStatus: FleetLive["tota
   const order: RobotStatus[] = ["tracking", "charging", "moving", "docked", "fault"];
   return (
     <div>
-      <div className="flex h-3 rounded-full overflow-hidden gap-[2px] bg-surface-2">
+      <div
+        role="img"
+        aria-label={`Fleet status: ${order.map((s) => `${byStatus[s]} ${statusMeta[s].label.toLowerCase()}`).join(", ")}`}
+        className="flex h-3 rounded-full overflow-hidden gap-[2px] bg-surface-2"
+      >
         {order.map((s) =>
           byStatus[s] ? (
             <div
@@ -89,18 +93,19 @@ export function StatusBreakdown({ byStatus, total }: { byStatus: FleetLive["tota
           ) : null,
         )}
       </div>
-      <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-3">
+      {/* sized by the card, not the viewport: the legend wraps before any label can collide with a count */}
+      <ul className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(8.5rem,1fr))] gap-x-5 gap-y-2.5" aria-hidden>
         {order.map((s) => {
           const M = statusMeta[s];
           return (
-            <div key={s} className="flex items-center gap-2 text-sm">
+            <li key={s} className="flex min-w-0 items-center gap-2 text-sm">
               <M.Icon className="size-4 shrink-0" style={{ color: M.color }} />
-              <span className="text-muted">{M.label}</span>
-              <span className="ml-auto sm:ml-0 font-mono tabular font-medium">{byStatus[s]}</span>
-            </div>
+              <span className="truncate text-muted">{M.label}</span>
+              <span className="ml-auto font-mono tabular font-medium">{byStatus[s]}</span>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </div>
   );
 }
@@ -132,7 +137,7 @@ export function RiskList({ robots, limit = 6, compact }: { robots: RobotLive[]; 
                 <span className="font-mono">{r.unit.id}</span>
                 {!compact && <StatusPill status={r.status} />}
               </div>
-              <div className="text-xs text-muted truncate mt-0.5">
+              <div className="text-xs text-muted line-clamp-2 mt-0.5">
                 {p.component} · {p.days === 0 ? "failed, dispatch needed" : `failure likely in ~${p.days} days`} ·{" "}
                 {fmt.pct(p.confidence, 0)} conf.
               </div>
@@ -149,12 +154,13 @@ export function RiskDial({ value }: { value: number }) {
   const tone = value > 0.85 ? "var(--danger)" : value > 0.6 ? "var(--warning)" : "var(--primary)";
   const c = 2 * Math.PI * 15;
   return (
-    <div className="relative size-10 shrink-0" title={`Risk ${Math.round(value * 100)}`}>
-      <svg viewBox="0 0 36 36" className="size-full -rotate-90">
+    <div className="relative size-10 shrink-0" title={`Risk score ${Math.round(value * 100)} of 100`}>
+      <span className="sr-only">Risk score {Math.round(value * 100)} of 100</span>
+      <svg viewBox="0 0 36 36" className="size-full -rotate-90" aria-hidden>
         <circle cx="18" cy="18" r="15" fill="none" stroke="var(--surface-2)" strokeWidth="4" />
         <circle cx="18" cy="18" r="15" fill="none" stroke={tone} strokeWidth="4" strokeLinecap="round" strokeDasharray={`${value * c} ${c}`} />
       </svg>
-      <span className="absolute inset-0 grid place-items-center text-[10px] font-mono font-semibold">
+      <span className="absolute inset-0 grid place-items-center text-[0.625rem] font-mono font-semibold" aria-hidden>
         {Math.round(value * 100)}
       </span>
     </div>
@@ -176,7 +182,7 @@ export function TicketList({ siteIds, limit = 5 }: { siteIds: string[]; limit?: 
             <MessageSquare className="size-4 text-muted" />
           </span>
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-medium truncate">{t.title}</div>
+            <div className="text-sm font-medium line-clamp-2">{t.title}</div>
             <div className="text-xs text-muted mt-0.5 truncate">
               <span className="font-mono">{t.id}</span> · {t.from} ·{" "}
               {new Date(t.opened).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
@@ -184,7 +190,7 @@ export function TicketList({ siteIds, limit = 5 }: { siteIds: string[]; limit?: 
           </div>
           <div className="flex flex-col items-end gap-1 shrink-0">
             <Badge tone={PRIORITY_TONE[t.priority]}>{t.priority}</Badge>
-            <span className="text-[11px] text-subtle">{STATUS_LABEL[t.status]}</span>
+            <span className="text-[0.6875rem] text-subtle">{STATUS_LABEL[t.status]}</span>
           </div>
         </div>
       ))}
@@ -221,7 +227,13 @@ export function SiteTable({ sites, role }: { sites: SiteLive[]; role: "buyer" | 
                 </td>
                 <td className="px-3 py-3 text-right font-mono tabular whitespace-nowrap">
                   {s.robots.length}
-                  {faults > 0 && <span className="text-danger text-xs ml-1.5">{faults}⚠</span>}
+                  {faults > 0 && (
+                  <span className="inline-flex items-center gap-0.5 text-danger text-xs ml-1.5 align-middle">
+                    <TriangleAlert className="size-3" aria-hidden />
+                    {faults}
+                    <span className="sr-only"> faulted</span>
+                  </span>
+                )}
                 </td>
                 <td className="px-3 py-3 text-right font-mono tabular whitespace-nowrap">{fmt.kw(s.kw)}</td>
                 <td className="px-3 py-3 text-right font-mono tabular whitespace-nowrap">{fmt.kwh(s.day.solarKwh)}</td>

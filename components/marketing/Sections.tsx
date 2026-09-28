@@ -167,7 +167,7 @@ export function RobotSection() {
                     <Icon className="size-[18px]" />
                   </span>
                   <div>
-                    <div className="font-medium text-[15px]">{t}</div>
+                    <div className="font-medium text-[0.9375rem]">{t}</div>
                     <p className="text-sm text-muted mt-0.5">{d}</p>
                   </div>
                 </div>
@@ -231,9 +231,9 @@ function PreviewFrame({ children, title, subtitle }: { children: React.ReactNode
 function MiniStat({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="rounded-[var(--radius-md)] bg-surface-2 p-3 min-w-0">
-      <div className="text-[11px] text-muted truncate">{label}</div>
+      <div className="text-[0.6875rem] text-muted truncate">{label}</div>
       <div className="font-mono tabular text-lg font-semibold mt-0.5 truncate">{value}</div>
-      {sub && <div className="text-[11px] text-subtle truncate">{sub}</div>}
+      {sub && <div className="text-[0.6875rem] text-subtle truncate">{sub}</div>}
     </div>
   );
 }
@@ -357,7 +357,7 @@ export function AudienceSection() {
             <p className="mt-3 text-muted">{a.pitch}</p>
             <ul className="mt-6 space-y-3">
               {a.points.map((p) => (
-                <li key={p} className="flex gap-3 text-[15px]">
+                <li key={p} className="flex gap-3 text-[0.9375rem]">
                   <span className="size-5 rounded-full bg-accent-soft text-accent-soft-fg grid place-items-center shrink-0 mt-0.5">
                     <Check className="size-3" />
                   </span>

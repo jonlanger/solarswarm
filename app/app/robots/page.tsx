@@ -2,15 +2,22 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { ArrowDownUp, Search } from "lucide-react";
 import { PageHeader } from "@/components/app/AppShell";
 import { RiskDial } from "@/components/app/widgets";
-import { BatteryGauge, Card, Segmented, StatusPill, statusMeta, type RobotStatus } from "@/components/ui";
+import { BatteryGauge, Card, Segmented, Select, StatusPill, statusMeta, type RobotStatus, type SelectOption } from "@/components/ui";
 import { getSite } from "@/lib/sim/store";
 import { useFleet } from "@/lib/sim/useFleet";
 
 type Filter = "all" | RobotStatus | "risk";
 type Sort = "risk" | "id" | "power" | "soc";
+
+const SORTS: SelectOption<Sort>[] = [
+  { value: "risk", label: "Risk (highest first)", textValue: "risk" },
+  { value: "power", label: "Output (highest first)", textValue: "output" },
+  { value: "soc", label: "Battery (lowest first)", textValue: "battery" },
+  { value: "id", label: "Unit ID", textValue: "unit ID" },
+];
 
 export default function RobotsPage() {
   const fleet = useFleet();
@@ -42,6 +49,7 @@ export default function RobotsPage() {
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <Segmented<Filter>
           size="sm"
+          label="Filter by status"
           value={filter}
           onChange={(v) => {
             setFilter(v);
@@ -49,37 +57,41 @@ export default function RobotsPage() {
           }}
           options={[
             { value: "all", label: `All ${fleet.totals.units}` },
-            ...(["tracking", "moving", "charging", "docked", "fault"] as RobotStatus[]).map((s) => ({
-              value: s,
-              label: `${statusMeta[s].label} ${fleet.totals.byStatus[s]}`,
-            })),
+            ...(["tracking", "moving", "charging", "docked", "fault"] as RobotStatus[]).map((s) => {
+              const M = statusMeta[s];
+              return {
+                value: s,
+                icon: <M.Icon style={{ color: M.color }} />,
+                label: `${M.label} ${fleet.totals.byStatus[s]}`,
+              };
+            }),
             { value: "risk", label: `At risk ${fleet.robots.filter((r) => r.unit.prediction).length}` },
           ]}
-          className="max-w-full overflow-x-auto"
         />
-        <div className="relative ml-auto">
-          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+        <div className="relative flex-1 min-w-[10rem] sm:flex-none sm:ml-auto">
+          <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none" />
           <input
+            type="search"
+            aria-label="Search unit or site"
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
               setPage(0);
             }}
             placeholder="Search unit or site"
-            className="h-9 w-56 pl-9 pr-3 rounded-[var(--radius-sm)] border border-border bg-surface text-sm outline-none focus:border-primary"
+            className="h-9 w-full sm:w-56 pl-9 pr-3 rounded-[var(--radius-sm)] border border-border bg-surface text-sm outline-none focus:border-primary"
           />
         </div>
-        <select
-          aria-label="Sort"
+        <Select
+          label="Sort by"
+          hideLabel
+          icon={<ArrowDownUp />}
+          align="end"
           value={sort}
-          onChange={(e) => setSort(e.target.value as Sort)}
-          className="h-9 px-2 rounded-[var(--radius-sm)] border border-border bg-surface text-sm"
-        >
-          <option value="risk">Sort: risk</option>
-          <option value="power">Sort: output</option>
-          <option value="soc">Sort: battery (low first)</option>
-          <option value="id">Sort: unit ID</option>
-        </select>
+          onChange={setSort}
+          renderValue={(o) => <>Sort: {o.textValue}</>}
+          options={SORTS}
+        />
       </div>
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">

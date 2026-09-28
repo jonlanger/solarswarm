@@ -21,7 +21,7 @@ export function Stepper({ steps, current }: { steps: string[]; current: number }
             </span>
             <span
               className={cn(
-                "text-[13px] truncate hidden sm:block",
+                "text-[0.8125rem] truncate hidden sm:block",
                 active ? "text-text font-medium" : "text-muted",
               )}
             >

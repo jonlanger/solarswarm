@@ -4,6 +4,7 @@ import type { CanvasProps } from "@react-three/fiber";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "@/lib/a11y/settings";
 import { cn } from "@/lib/cn";
 
 // three.js + R3F + postprocessing load in their own chunk, after the poster has painted
@@ -38,10 +39,10 @@ export function Stage({
   const [visible, setVisible] = useState(eager);
   const [inView, setInView] = useState(eager);
   const [ready, setReady] = useState(false);
-  const [reduced, setReduced] = useState(false);
+  // OS preference or Settings → Accessibility → Motion
+  const reduced = useReducedMotion();
 
   useEffect(() => {
-    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     if (!ref.current) return;
     // mount once near the viewport; pause rendering whenever off-screen
     const io = new IntersectionObserver(

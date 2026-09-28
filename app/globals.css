@@ -67,6 +67,29 @@ html {
   background: var(--bg);
 }
 
+/* ---- Accessibility settings (see lib/a11y/settings.ts) ---- */
+/* text size: every size and spacing in the UI is rem-based, so this scales the whole interface */
+html[data-text="large"] {
+  font-size: 112.5%;
+}
+html[data-text="xlarge"] {
+  font-size: 125%;
+}
+/* legible typeface: overrides next/font's variable on <body> */
+[data-font="hyperlegible"] body {
+  --font-geist-sans: var(--font-hyperlegible);
+  letter-spacing: 0.01em;
+}
+[data-links="underline"] :where(main, footer) a:not([role="menuitem"]):not([class*="bg-"]) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+[data-focus="bold"] :focus-visible {
+  outline: 3px solid var(--primary) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--bg) !important;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -118,11 +141,43 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* reduced motion: OS preference (unless the user forced full motion in Settings) or the Settings override */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  :root:not([data-motion="full"]) *,
+  :root:not([data-motion="full"]) *::before,
+  :root:not([data-motion="full"]) *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
+}
+[data-motion="reduce"] *,
+[data-motion="reduce"] *::before,
+[data-motion="reduce"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }

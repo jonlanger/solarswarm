@@ -73,7 +73,7 @@ export function TrackingSection() {
                 onChange={(e) => setHour(parseFloat(e.target.value))}
                 className="mt-3 w-full accent-[var(--primary)] cursor-pointer"
               />
-              <div className="mt-1 flex justify-between text-[11px] text-subtle font-mono">
+              <div className="mt-1 flex justify-between text-[0.6875rem] text-subtle font-mono">
                 <span>5am</span>
                 <span>noon</span>
                 <span>8pm</span>
@@ -157,7 +157,7 @@ export function TrackingSection() {
 function Readout({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="rounded-[var(--radius-md)] bg-surface-2 px-3 py-3">
-      <div className="text-[11px] text-muted">{label}</div>
+      <div className="text-[0.6875rem] text-muted">{label}</div>
       <div className={`font-mono tabular text-lg font-semibold mt-1 ${accent ? "text-primary" : ""}`}>{value}</div>
     </div>
   );

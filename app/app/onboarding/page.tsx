@@ -3,12 +3,12 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, MapPin, PartyPopper, QrCode, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, CircleCheck, MapPin, PartyPopper, QrCode, RotateCcw } from "lucide-react";
 import { PageHeader } from "@/components/app/AppShell";
 import { Panel } from "@/components/app/widgets";
 import { FleetMapLazy } from "@/components/map/FleetMapLazy";
 import { Stage } from "@/components/three/Stage";
-import { Badge, Button, Card, Segmented, Stepper, buttonClass } from "@/components/ui";
+import { Badge, Button, Card, Segmented, Select, Stepper, buttonClass } from "@/components/ui";
 import { fmt, simulateDay } from "@/lib/sim/energy";
 import { ORGS, ROLE_META, SITES, commissionSite, offsetLatLon, type Site } from "@/lib/sim/model";
 import { useSim } from "@/lib/sim/store";
@@ -146,7 +146,7 @@ export default function OnboardingPage() {
               <div
                 key={s}
                 className={cn(
-                  "rounded-[6px] px-1.5 py-1 text-[10.5px] font-mono text-center border transition-colors",
+                  "rounded-[6px] px-1.5 py-1 text-[0.6562rem] font-mono text-center border transition-colors",
                   i < paired ? "bg-primary-soft border-primary/40 text-primary-soft-fg" : "bg-accent-soft/50 border-border text-muted",
                 )}
                 title={i < paired ? "Paired" : "Awaiting pairing"}
@@ -164,7 +164,7 @@ export default function OnboardingPage() {
       )}
 
       {step === 1 && (
-        <div className="grid gap-4 xl:grid-cols-[1fr_1.6fr]">
+        <div className="grid gap-4 grid-cols-1 xl:grid-cols-[1fr_1.6fr]">
           <Panel title="Where are they going?">
             <Segmented
               value={mode}
@@ -180,16 +180,14 @@ export default function OnboardingPage() {
                   <span className="block text-muted mb-1.5">Site name</span>
                   <input value={name} onChange={(e) => setName(e.target.value)} className="h-10 w-full px-3 rounded-[var(--radius-sm)] border border-border bg-surface" />
                 </label>
-                <label className="block">
-                  <span className="block text-muted mb-1.5">Customer (site owner)</span>
-                  <select value={owner} onChange={(e) => setOwner(e.target.value)} className="h-10 w-full px-2 rounded-[var(--radius-sm)] border border-border bg-surface">
-                    {ORGS.filter((o) => o.kind === "buyer").map((o) => (
-                      <option key={o.id} value={o.id}>
-                        {o.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <Select
+                  label="Customer (site owner)"
+                  size="lg"
+                  icon={<Building2 />}
+                  value={owner}
+                  onChange={setOwner}
+                  options={ORGS.filter((o) => o.kind === "buyer").map((o) => ({ value: o.id, label: o.name }))}
+                />
                 <div className="rounded-[var(--radius-md)] bg-surface-2 p-3 flex gap-3">
                   <MapPin className="size-4 text-accent mt-0.5 shrink-0" />
                   <div>
@@ -201,17 +199,17 @@ export default function OnboardingPage() {
                 </div>
               </div>
             ) : (
-              <label className="mt-5 block text-sm">
-                <span className="block text-muted mb-1.5">Site</span>
-                <select value={baseSite} onChange={(e) => setBaseSite(e.target.value)} className="h-10 w-full px-2 rounded-[var(--radius-sm)] border border-border bg-surface">
-                  {SITES.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="mt-5 text-sm">
+                <Select
+                  label="Site"
+                  size="lg"
+                  icon={<MapPin />}
+                  value={baseSite}
+                  onChange={setBaseSite}
+                  options={SITES.map((s) => ({ value: s.id, label: s.name, description: s.region }))}
+                />
                 <span className="block text-xs text-muted mt-2">A new block will be placed 95 m east of the existing array.</span>
-              </label>
+              </div>
             )}
           </Panel>
           <Card className="overflow-hidden min-h-[440px]">
@@ -229,7 +227,7 @@ export default function OnboardingPage() {
       )}
 
       {step === 2 && (
-        <div className="grid gap-4 xl:grid-cols-[1fr_1.4fr]">
+        <div className="grid gap-4 grid-cols-1 xl:grid-cols-[1fr_1.4fr]">
           <Panel title="Formation" subtitle="The swarm spaces itself to avoid row-to-row shading at low sun.">
             <div className="space-y-5 text-sm">
               <Slider label="Units per row" value={cols} min={4} max={16} step={1} onChange={setCols} fmt={(v) => `${v} (${rows} rows)`} />
@@ -250,7 +248,7 @@ export default function OnboardingPage() {
       )}
 
       {step === 3 && (
-        <div className="grid gap-4 xl:grid-cols-[1.6fr_1fr]">
+        <div className="grid gap-4 grid-cols-1 xl:grid-cols-[1.6fr_1fr]">
           <Card className="overflow-hidden relative h-[520px] bg-violet-950">
             <Stage eager className="absolute inset-0" camera={{ position: [11, 2.4, 21], fov: 40, near: 0.1, far: 6000 }}>
               <DeployScene progress={progress} />
@@ -299,7 +297,7 @@ export default function OnboardingPage() {
                 <Row k="Capacity" v={fmt.kw((count * 410) / 1000)} />
                 <Row k="Contract" v={<Badge tone="copper">Lease · $36/unit/mo</Badge>} />
                 <Button className="w-full mt-2" size="lg" disabled={deployPct < 1} onClick={commission}>
-                  <CheckCircle2 className="size-4" /> {deployPct < 1 ? "Deploying…" : "Commission array"}
+                  <CircleCheck className="size-4" /> {deployPct < 1 ? "Deploying…" : "Commission array"}
                 </Button>
                 <p className="text-xs text-muted">The preview shows the first 48 units of the formation.</p>
               </div>
@@ -350,7 +348,7 @@ function Slider({ label, value, min, max, step, onChange, fmt: f }: { label: str
 function Est({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-[var(--radius-md)] bg-surface-2 p-3">
-      <div className="text-[11px] text-muted">{label}</div>
+      <div className="text-[0.6875rem] text-muted">{label}</div>
       <div className="font-mono tabular font-semibold mt-0.5">{value}</div>
     </div>
   );

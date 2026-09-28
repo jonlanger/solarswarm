@@ -63,7 +63,7 @@ export function RingGauge({
       <div className="absolute inset-0 grid place-items-center text-center">
         <div>
           <div className="font-mono tabular text-lg font-semibold leading-none">{v.toFixed(1)}%</div>
-          {label && <div className="text-[11px] text-muted mt-1">{label}</div>}
+          {label && <div className="text-[0.6875rem] text-muted mt-1">{label}</div>}
         </div>
       </div>
     </div>

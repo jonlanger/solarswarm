@@ -12,3 +12,5 @@ export * from "./sheet";
 export * from "./theme-toggle";
 export * from "./table";
 export * from "./logo";
+export * from "./select";
+export * from "./menu";

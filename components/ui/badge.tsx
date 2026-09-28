@@ -1,5 +1,5 @@
 import { cn } from "@/lib/cn";
-import { AlertTriangle, BatteryCharging, Navigation, ParkingSquare, Sun } from "lucide-react";
+import { BatteryCharging, Route, SquareParking, Sun, TriangleAlert } from "lucide-react";
 
 type Tone = "neutral" | "primary" | "copper" | "success" | "warning" | "danger" | "info";
 
@@ -38,9 +38,9 @@ export const statusMeta: Record<
 > = {
   tracking: { label: "Tracking", tone: "primary", color: "var(--status-tracking)", Icon: Sun },
   charging: { label: "Charging", tone: "copper", color: "var(--status-charging)", Icon: BatteryCharging },
-  moving: { label: "Moving", tone: "info", color: "var(--status-moving)", Icon: Navigation },
-  docked: { label: "Docked", tone: "neutral", color: "var(--status-docked)", Icon: ParkingSquare },
-  fault: { label: "Fault", tone: "danger", color: "var(--status-fault)", Icon: AlertTriangle },
+  moving: { label: "Moving", tone: "info", color: "var(--status-moving)", Icon: Route },
+  docked: { label: "Docked", tone: "neutral", color: "var(--status-docked)", Icon: SquareParking },
+  fault: { label: "Fault", tone: "danger", color: "var(--status-fault)", Icon: TriangleAlert },
 };
 
 export function StatusPill({ status, className }: { status: RobotStatus; className?: string }) {

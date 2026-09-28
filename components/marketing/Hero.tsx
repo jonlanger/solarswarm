@@ -30,7 +30,7 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto max-w-7xl h-full px-4 sm:px-6 flex flex-col justify-center pt-16">
         <div className="max-w-xl">
-          <h1 className="text-[44px] sm:text-6xl lg:text-[76px] leading-[0.98] font-semibold tracking-[-0.035em]">
+          <h1 className="text-[2.75rem] sm:text-6xl lg:text-[4.75rem] leading-[0.98] font-semibold tracking-[-0.035em]">
             Solar fields that
             <br />
             <span className="bg-[linear-gradient(100deg,#d9c7ff,#9d6bff_45%,#e0a36a)] bg-clip-text text-transparent">
@@ -64,7 +64,7 @@ export function Hero() {
             <div key={l} className="px-5 py-4 bg-white/[0.02]">
               <dt className="sr-only">{l}</dt>
               <dd className="font-mono tabular text-2xl font-semibold tracking-tight">{v}</dd>
-              <dd className="text-[12.5px] text-white/60 mt-1">{l}</dd>
+              <dd className="text-[0.7812rem] text-white/60 mt-1">{l}</dd>
             </div>
           ))}
         </dl>
